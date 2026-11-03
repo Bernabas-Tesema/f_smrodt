@@ -1,0 +1,6 @@
+{
+  "name": "Project Spec Studio",
+  "description": "SMROD AIOT TECH — Connected Vehicle Security Operations Platform, ESP32-S3 Device Gateway, and Django Backend REST API System.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
