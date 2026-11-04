@@ -4,10 +4,13 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_text_styles.dart';
+import '../../../../app/theme/app_theme.dart';
 import '../../../../core/alerts/voice_service.dart';
 import '../../../../core/widgets/app_loader.dart';
 import '../../../authentication/presentation/viewmodels/auth_viewmodel.dart';
+import '../../../security/presentation/providers/ai_provider.dart';
 import '../../../security/presentation/widgets/security_status_card.dart';
+import '../../../security/data/datasources/ai_remote_datasource.dart';
 import '../../../../shared/widgets/asset_glyph.dart';
 import '../../domain/entities/vehicle.dart';
 import '../viewmodels/vehicle_viewmodel.dart';
@@ -150,8 +153,15 @@ class _WelcomeCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 12, 8, 12),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(26),
-        gradient: const LinearGradient(colors: [AppColors.red, AppColors.green]),
+        borderRadius: BorderRadius.circular(28),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppColors.red, AppColors.green],
+        ),
+        boxShadow: const [
+          BoxShadow(color: Color(0x2E141816), blurRadius: 28, offset: Offset(0, 16)),
+        ],
       ),
       child: Row(
         children: [
@@ -197,14 +207,7 @@ class _VehicleHeroCard extends StatelessWidget {
     final statusColor = vehicle.online ? AppColors.green : AppColors.red;
     return Container(
         padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(26),
-          border: Border.all(color: AppColors.line),
-          boxShadow: const [
-            BoxShadow(color: Color(0x10000000), blurRadius: 20, offset: Offset(0, 8)),
-          ],
-        ),
+        decoration: AppTheme.card,
         child: Row(
           children: [
             Container(
@@ -265,7 +268,7 @@ class _SosCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: AppColors.red,
-      borderRadius: BorderRadius.circular(26),
+      borderRadius: BorderRadius.circular(28),
       child: InkWell(
         borderRadius: BorderRadius.circular(26),
         onTap: () {
@@ -296,8 +299,9 @@ class _SosCard extends StatelessWidget {
                 width: 74,
                 height: 74,
                 decoration: BoxDecoration(
+                  color: AppColors.red,
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 4),
+                  border: Border.all(color: Colors.white, width: 3),
                 ),
                 alignment: Alignment.center,
                 child: const Text('SOS', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
@@ -350,10 +354,17 @@ class _CircleAction extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              width: 58,
-              height: 58,
-              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-              child: Icon(icon, color: Colors.white),
+              width: 62,
+              height: 62,
+              decoration: BoxDecoration(
+                color: AppColors.paper,
+                shape: BoxShape.circle,
+                border: Border.all(color: color.withValues(alpha: 0.35)),
+                boxShadow: const [
+                  BoxShadow(color: Color(0x10141816), blurRadius: 16, offset: Offset(0, 8)),
+                ],
+              ),
+              child: Icon(icon, color: color),
             ),
             const SizedBox(height: 8),
             Text(label, textAlign: TextAlign.center, style: AppTextStyles.caption),
@@ -384,26 +395,33 @@ class _FingerprintBadge extends StatelessWidget {
   }
 }
 
-class _AiIntelligenceCard extends StatelessWidget {
+class _AiIntelligenceCard extends ConsumerWidget {
   const _AiIntelligenceCard({required this.vehicle});
 
   final Vehicle vehicle;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final asyncAi = ref.watch(aiOverviewProvider);
+    final snapshot = asyncAi.valueOrNull ??
+        AiOverviewSnapshot.fallback(riskScore: vehicle.riskScore);
+    final loading = asyncAi.isLoading;
+    final connected = snapshot.connected;
+    final riskColor = snapshot.riskScore >= 70
+        ? const Color(0xFFFF8A80)
+        : snapshot.riskScore >= 40
+            ? const Color(0xFFFFD54F)
+            : AppColors.green;
+
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF042F2E), Color(0xFF0F3D39)],
-        ),
+        borderRadius: BorderRadius.circular(24),
+        color: AppColors.greenDark,
         boxShadow: const [
           BoxShadow(
-            color: Color(0x1A0D9488),
-            blurRadius: 12,
-            offset: Offset(0, 4),
+            color: Color(0x24141816),
+            blurRadius: 24,
+            offset: Offset(0, 12),
           ),
         ],
       ),
@@ -419,12 +437,12 @@ class _AiIntelligenceCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF14B8A6).withValues(alpha: 0.2),
+                      color: Colors.white.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: const Icon(
                       Icons.auto_awesome,
-                      color: Color(0xFF2DD4BF),
+                      color: Colors.white,
                       size: 18,
                     ),
                   ),
@@ -439,27 +457,43 @@ class _AiIntelligenceCard extends StatelessWidget {
                   ),
                 ],
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF14B8A6).withValues(alpha: 0.25),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFF2DD4BF).withValues(alpha: 0.3)),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.circle, size: 6, color: Color(0xFF34D399)),
-                    SizedBox(width: 5),
-                    Text(
-                      'Connected',
-                      style: TextStyle(
-                        color: Color(0xFF5EEAD4),
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
+              InkWell(
+                onTap: () => ref.invalidate(aiOverviewProvider),
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.white24),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.circle,
+                        size: 6,
+                        color: loading
+                            ? Colors.white54
+                            : connected
+                                ? AppColors.green
+                                : const Color(0xFFFF8A80),
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 5),
+                      Text(
+                        loading
+                            ? 'Syncing'
+                            : connected
+                                ? 'Live Django'
+                                : 'Offline',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -474,19 +508,28 @@ class _AiIntelligenceCard extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _statColumn('Risk Score', '18/100', const Color(0xFF34D399)),
+                _statColumn('Risk Score', '${snapshot.riskScore}/100', riskColor),
                 Container(width: 1, height: 28, color: Colors.white12),
-                _statColumn('Theft Guard', 'ARMED', const Color(0xFF2DD4BF)),
+                _statColumn('Theft Guard', snapshot.theftLabel, Colors.white),
                 Container(width: 1, height: 28, color: Colors.white12),
-                _statColumn('Crash Triage', 'NORMAL', const Color(0xFF5EEAD4)),
+                _statColumn('Crash Triage', snapshot.crashLabel, Colors.white),
               ],
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Live telemetry synchronized with Django AI Inference Engine.',
-            style: TextStyle(color: Colors.white60, fontSize: 11),
+          Text(
+            connected
+                ? '${snapshot.provider} · ${snapshot.model}'
+                : 'Start Django (`python manage.py runserver`) to load live AI.',
+            style: const TextStyle(color: Colors.white60, fontSize: 11),
           ),
+          if (snapshot.insights.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(
+              snapshot.insights.first,
+              style: const TextStyle(color: Colors.white70, fontSize: 11),
+            ),
+          ],
         ],
       ),
     );

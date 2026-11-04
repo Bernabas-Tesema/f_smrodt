@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../app/theme/app_colors.dart';
 import '../../../../core/utils/validators.dart';
@@ -33,11 +34,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    await ref.read(authViewModelProvider.notifier).register(
+    final email = _email.text.trim();
+    final created = await ref.read(authViewModelProvider.notifier).register(
       name: _name.text,
-      email: _email.text,
+      email: email,
       password: _password.text,
     );
+    if (!created || !mounted) return;
+    context.go('/login', extra: email);
   }
 
   @override
@@ -54,16 +58,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               children: [
                 const Center(child: BrandLogoBadge()),
                 const SizedBox(height: 28),
-                const Text(
+                Text(
                   'Create Account',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.w800, color: AppColors.ink, letterSpacing: -0.6),
+                  style: GoogleFonts.manrope(fontSize: 34, fontWeight: FontWeight.w800, color: AppColors.ink, letterSpacing: -1.2, height: 1.05),
                 ),
-                const SizedBox(height: 8),
-                const Text(
+                const SizedBox(height: 10),
+                Text(
                   'Sign up to get started with your dashboard.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 16, height: 1.4, color: AppColors.muted),
+                  style: GoogleFonts.manrope(fontSize: 15, height: 1.45, color: AppColors.muted, fontWeight: FontWeight.w500),
                 ),
                 const SizedBox(height: 32),
                 Form(

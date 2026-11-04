@@ -67,9 +67,9 @@ class _Splash extends StatelessWidget {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Color(0xF2F7F3F2),
-                  Color(0xC7F7F3F2),
-                  Color(0xF2F7F3F2),
+                  Color(0xF2F3EEE6),
+                  Color(0xC7F3EEE6),
+                  Color(0xF2F3EEE6),
                 ],
               ),
             ),

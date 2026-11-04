@@ -50,13 +50,16 @@ class LogoBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 92,
-      height: 92,
-      padding: const EdgeInsets.all(14),
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      width: 108,
+      height: 108,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: AppColors.paper,
         shape: BoxShape.circle,
-        boxShadow: [BoxShadow(color: Color(0x14000000), blurRadius: 16, offset: Offset(0, 8))],
+        border: Border.all(color: Colors.white, width: 6),
+        boxShadow: const [
+          BoxShadow(color: Color(0x1A141816), blurRadius: 28, offset: Offset(0, 14)),
+        ],
       ),
       child: Stack(
         clipBehavior: Clip.none,

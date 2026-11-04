@@ -21,8 +21,9 @@ import {
 const SUPABASE_URL =
   import.meta.env.VITE_SUPABASE_URL || 'https://tobexeirhbjehfwrojty.supabase.co';
 const SUPABASE_ANON_KEY =
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
   import.meta.env.VITE_SUPABASE_ANON_KEY ||
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvYmV4ZWlyaGJqZWhmd3JvanR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM2OTU2ODcsImV4cCI6MjEwOTI3MTY4N30.SFB7tCCWl8U5NKrJT72cYtCEcSr2usg-QppQ1SMWmQU';
+  'sb_publishable_WsbwClnOVSev3LYo3AgVgA_qsdPvo4b';
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {

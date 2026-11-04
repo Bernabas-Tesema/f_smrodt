@@ -14,18 +14,20 @@ import '../../features/geofence/presentation/screens/geofence_screen.dart';
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
 import '../../features/security/presentation/screens/remote_control_screen.dart';
 import '../../features/security/presentation/screens/security_screen.dart';
+import '../../features/support/presentation/screens/customer_support_screen.dart';
 import '../../features/tracking/presentation/screens/tracking_screen.dart';
 import '../../features/vehicle/presentation/screens/vehicle_dashboard_screen.dart';
 import '../../features/vehicle/presentation/screens/vehicle_details_screen.dart';
 import '../../features/vehicle/presentation/screens/vehicle_pairing_screen.dart';
 import '../../shared/widgets/app_scaffold.dart';
-import '../../features/vehicle/presentation/viewmodels/vehicle_viewmodel.dart';
+import '../../core/storage/pilot_store.dart';
 
 /// Application route configuration.
 final routerProvider = Provider<GoRouter>((ref) {
   final refresh = ValueNotifier<int>(0);
   ref.onDispose(refresh.dispose);
   ref.listen(authViewModelProvider, (_, _) => refresh.value++);
+  ref.listen(pilotStoreProvider, (_, _) => refresh.value++);
 
   return GoRouter(
     initialLocation: _start(ref),
@@ -52,7 +54,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/welcome',
         builder: (context, state) => const WelcomeScreen(),
       ),
-      GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
+      GoRoute(
+        path: '/login',
+        builder: (context, state) {
+          final email = state.extra;
+          return LoginScreen(noticeEmail: email is String ? email : null);
+        },
+      ),
       GoRoute(
         path: '/register',
         builder: (context, state) => const RegisterScreen(),
@@ -131,6 +139,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/geofence',
         builder: (context, state) => const GeofenceScreen(),
       ),
+      GoRoute(
+        path: '/support',
+        builder: (context, state) => const CustomerSupportScreen(),
+      ),
     ],
   );
 });
@@ -144,5 +156,6 @@ String _start(Ref ref) {
 
 bool _hasVehicle(Ref ref, String? ownerId) {
   if (ownerId == null) return false;
-  return ref.read(vehicleViewModelProvider).vehicle?.ownerId == ownerId;
+  final data = ref.read(pilotStoreProvider);
+  return data.vehiclesByOwner[ownerId] != null || data.vehicle?.ownerId == ownerId;
 }

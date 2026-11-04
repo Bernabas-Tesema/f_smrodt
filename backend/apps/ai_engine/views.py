@@ -1,6 +1,6 @@
 import logging
 from django.utils import timezone
-from django.db.models import Avg, Sum, Count
+from django.db.models import Avg, Count, Q, Sum
 from rest_framework import status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -19,6 +19,9 @@ from .services.intelligence_service import AIIntelligenceService
 from .services.theft_detection import TheftDetectionService
 from .services.crash_detection import CrashDetectionService
 from .services.risk_scoring import RiskScoringEngine
+from .providers.gemini_provider import GeminiProvider
+from .providers.openai_provider import OpenAIProvider
+from .providers.anthropic_provider import AnthropicProvider
 from apps.vehicles.models import Vehicle
 
 logger = logging.getLogger('smrod.ai.views')
@@ -53,7 +56,7 @@ class AIOverviewView(APIView):
             avg_latency=Avg('latency_ms'),
             total_tokens=Sum('total_tokens'),
             total_cost=Sum('cost_usd'),
-            failed_count=Count('id', filter=models.Q(is_success=False) if hasattr(models, 'Q') else None)
+            failed_count=Count('id', filter=Q(is_success=False))
         ) if AIInferenceLog.objects.exists() else {}
 
         active_provider = AIProviderConfig.objects.filter(is_active=True).first()

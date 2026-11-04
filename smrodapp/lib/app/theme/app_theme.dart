@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
 
@@ -16,13 +17,18 @@ class AppTheme {
       onSecondary: Colors.white,
       error: AppColors.red,
       onError: Colors.white,
-      surface: Colors.white,
+      surface: AppColors.paper,
       onSurface: AppColors.ink,
+    );
+    final text = GoogleFonts.manropeTextTheme().apply(
+      bodyColor: AppColors.ink,
+      displayColor: AppColors.ink,
     );
 
     return ThemeData(
       useMaterial3: true,
-      fontFamily: 'Roboto',
+      fontFamily: GoogleFonts.manrope().fontFamily,
+      textTheme: text,
       colorScheme: scheme,
       scaffoldBackgroundColor: AppColors.background,
       appBarTheme: const AppBarTheme(
@@ -34,13 +40,14 @@ class AppTheme {
         systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: Colors.white,
-        indicatorColor: AppColors.red.withValues(alpha: 0.12),
+        backgroundColor: AppColors.paper,
+        indicatorColor: AppColors.red.withValues(alpha: 0.14),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           final selected = states.contains(WidgetState.selected);
-          return TextStyle(
-            fontSize: 12,
+          return GoogleFonts.manrope(
+            fontSize: 11,
             fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+            letterSpacing: 0.1,
             color: selected ? AppColors.red : AppColors.muted,
           );
         }),
@@ -51,38 +58,40 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.white,
+        fillColor: AppColors.paper,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: AppColors.line),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: AppColors.line),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.red, width: 1.6),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColors.red, width: 1.4),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: AppColors.red),
         ),
         labelStyle: const TextStyle(color: AppColors.muted),
       ),
-      snackBarTheme: const SnackBarThemeData(
+      snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
         backgroundColor: AppColors.ink,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
     );
   }
 
   static BoxDecoration get card => BoxDecoration(
-    color: Colors.white,
-    borderRadius: BorderRadius.circular(22),
+    color: AppColors.paper,
+    borderRadius: BorderRadius.circular(24),
+    border: Border.all(color: AppColors.line),
     boxShadow: const [
-      BoxShadow(color: Color(0x12000000), blurRadius: 18, offset: Offset(0, 8)),
+      BoxShadow(color: Color(0x0C141816), blurRadius: 24, offset: Offset(0, 10)),
     ],
   );
 }

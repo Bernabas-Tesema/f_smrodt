@@ -42,7 +42,7 @@ dependencies:
   flutter_map: ^8.2.2
   latlong2: ^0.9.1
   shared_preferences: ^2.5.3
-  google_sign_in: ^6.2.2
+  google_sign_in: ^7.2.0
   sign_in_with_apple: ^6.1.4
   image_picker: ^1.1.2
   path_provider: ^2.1.5
@@ -50,6 +50,8 @@ dependencies:
   google_fonts: ^6.3.2
   flutter_tts: ^4.2.5
   better_auth_flutter: ^0.1.0
+  supabase_flutter: ^2.18.3
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:

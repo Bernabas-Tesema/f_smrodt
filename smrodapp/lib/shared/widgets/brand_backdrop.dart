@@ -1,8 +1,10 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../app/theme/app_colors.dart';
 
-/// Soft logo-colored curves: red at the top right, green at the bottom left.
+/// Warm paper with a lacquer wash and a thin instrument arc.
 class BrandBackdrop extends StatelessWidget {
   const BrandBackdrop({super.key});
 
@@ -22,11 +24,37 @@ class _CurvePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final red = Paint()..color = AppColors.red.withValues(alpha: 0.14);
-    final green = Paint()..color = AppColors.green.withValues(alpha: 0.16);
+    final red = Paint()
+      ..shader = RadialGradient(
+        colors: [
+          AppColors.red.withValues(alpha: 0.18),
+          AppColors.red.withValues(alpha: 0.02),
+          Colors.transparent,
+        ],
+        stops: const [0, 0.45, 1],
+      ).createShader(Rect.fromCircle(center: Offset(size.width * 0.92, -10), radius: size.width * 0.78));
+    canvas.drawCircle(Offset(size.width * 0.92, -10), size.width * 0.78, red);
 
-    canvas.drawCircle(Offset(size.width + 20, -10), size.width * 0.42, red);
-    canvas.drawCircle(Offset(-30, size.height + 10), size.width * 0.48, green);
+    final green = Paint()
+      ..shader = RadialGradient(
+        colors: [
+          AppColors.green.withValues(alpha: 0.14),
+          Colors.transparent,
+        ],
+      ).createShader(Rect.fromCircle(center: Offset(-20, size.height * 0.96), radius: size.width * 0.62));
+    canvas.drawCircle(Offset(-20, size.height * 0.96), size.width * 0.62, green);
+
+    final arc = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.1
+      ..color = AppColors.ink.withValues(alpha: 0.07);
+    canvas.drawArc(
+      Rect.fromCircle(center: Offset(size.width * 0.5, size.height * 0.18), radius: size.width * 0.72),
+      math.pi * 0.08,
+      math.pi * 0.84,
+      false,
+      arc,
+    );
   }
 
   @override

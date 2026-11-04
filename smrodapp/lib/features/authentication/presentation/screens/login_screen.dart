@@ -9,7 +9,9 @@ import '../viewmodels/auth_viewmodel.dart';
 
 /// Login screen.
 class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({super.key, this.noticeEmail});
+
+  final String? noticeEmail;
 
   @override
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
@@ -20,6 +22,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _email = TextEditingController();
   final _password = TextEditingController();
   bool _obscure = true;
+
+  @override
+  void initState() {
+    super.initState();
+    final email = widget.noticeEmail;
+    if (email != null && email.isNotEmpty) {
+      _email.text = email;
+    }
+  }
 
   @override
   void dispose() {
@@ -36,6 +47,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final auth = ref.watch(authViewModelProvider);
+    final noticeEmail = widget.noticeEmail;
     return BrandedPage(
       title: 'Welcome Back',
       subtitle: 'Secure access to your vehicle dashboard.',
@@ -79,6 +91,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             child: const Text('Forgot Password?', style: TextStyle(color: AppColors.red, fontWeight: FontWeight.w700)),
           ),
         ),
+        if (noticeEmail != null)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Text(
+              'We sent a verification email to $noticeEmail. Open it, then sign in.',
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppColors.greenDark, height: 1.4),
+            ),
+          ),
         if (auth.error != null)
           Padding(
             padding: const EdgeInsets.only(bottom: 8),

@@ -17,6 +17,7 @@ import {
   Zap
 } from 'lucide-react';
 import { UserRole } from '../types/smrod';
+import { supabase } from '../services/supabaseClient';
 
 interface LoginPageProps {
   onLoginSuccess: (email: string, role: UserRole) => void;
@@ -24,8 +25,8 @@ interface LoginPageProps {
 }
 
 export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onContinueAsGuest }) => {
-  const [email, setEmail] = useState('grace.omondi@smrod.ai');
-  const [password, setPassword] = useState('••••••••••••');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [selectedRole, setSelectedRole] = useState<UserRole>('super_admin');
   const [isLoading, setIsLoading] = useState(false);
@@ -37,25 +38,42 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onContinue
   const handleRolePreset = (role: UserRole, userEmail: string) => {
     setSelectedRole(role);
     setEmail(userEmail);
-    setPassword('••••••••••••');
+    setPassword('');
     setAuthError(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
       setAuthError('Please enter an operator email.');
+      return;
+    }
+    if (!password || password.includes('•')) {
+      setAuthError('Enter your real Supabase Auth password (not the masked preset).');
       return;
     }
 
     setIsLoading(true);
     setAuthError(null);
 
-    // Simulate Supabase Auth JWT verification with Django backend
-    setTimeout(() => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+      if (error) {
+        setAuthError(error.message);
+        return;
+      }
+
+      const meta = data.user?.user_metadata ?? {};
+      const roleFromMeta = (meta.role as UserRole | undefined) || selectedRole;
+      onLoginSuccess(data.user?.email || email, roleFromMeta);
+    } catch (err) {
+      setAuthError(err instanceof Error ? err.message : 'Supabase sign-in failed.');
+    } finally {
       setIsLoading(false);
-      onLoginSuccess(email, selectedRole);
-    }, 600);
+    }
   };
 
   const handleHardwareAuth = (type: 'fido2' | 'mtls') => {
@@ -69,8 +87,19 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onContinue
     }, 800);
   };
 
-  const handleResetPassword = (e: React.FormEvent) => {
+  const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!email) {
+      setAuthError('Enter the operator email to reset.');
+      return;
+    }
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: window.location.origin,
+    });
+    if (error) {
+      setAuthError(error.message);
+      return;
+    }
     setResetSent(true);
     setTimeout(() => {
       setResetSent(false);

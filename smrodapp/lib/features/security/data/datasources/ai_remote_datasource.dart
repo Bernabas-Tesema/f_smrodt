@@ -4,78 +4,137 @@ import '../../../../core/constants/api_constants.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/network/api_client.dart';
 
+/// Snapshot of Django AI overview for the owner app dashboard.
+class AiOverviewSnapshot {
+  const AiOverviewSnapshot({
+    required this.provider,
+    required this.model,
+    required this.riskScore,
+    required this.theftLabel,
+    required this.crashLabel,
+    required this.connected,
+    required this.insights,
+    this.error,
+  });
+
+  final String provider;
+  final String model;
+  final int riskScore;
+  final String theftLabel;
+  final String crashLabel;
+  final bool connected;
+  final List<String> insights;
+  final String? error;
+
+  factory AiOverviewSnapshot.fallback({String? error, int riskScore = 18}) {
+    return AiOverviewSnapshot(
+      provider: 'Google Gemini',
+      model: 'gemini-2.5-flash',
+      riskScore: riskScore,
+      theftLabel: 'ARMED',
+      crashLabel: 'NORMAL',
+      connected: false,
+      insights: const [
+        'Connect Django at localhost:8000 to load live AI metrics.',
+        'Theft and crash models stay armed on-device meanwhile.',
+      ],
+      error: error,
+    );
+  }
+}
+
 /// Remote AI Intelligence Data Source connecting Flutter to the Django AI Engine.
 class AiRemoteDataSource {
   const AiRemoteDataSource(this._api);
 
   final ApiClient _api;
 
-  /// Fetch overall AI threat overview and fleet security health.
-  Future<Map<String, dynamic>> getAiOverview() async {
-    final response = await _guard(() => _api.get(ApiConstants.aiOverview));
-    if (response.data is Map<String, dynamic>) {
-      return response.data as Map<String, dynamic>;
+  /// Fetch overall AI threat overview from Django `/ai/overview/`.
+  Future<AiOverviewSnapshot> getAiOverview({int fallbackRisk = 18}) async {
+    try {
+      final response = await _guard(() => _api.get(ApiConstants.aiOverview));
+      final data = response.data;
+      if (data is! Map) {
+        return AiOverviewSnapshot.fallback(riskScore: fallbackRisk);
+      }
+
+      final map = Map<String, dynamic>.from(data);
+      final metrics = Map<String, dynamic>.from(
+        (map['metrics'] as Map?) ?? const {},
+      );
+      final theftCount = (metrics['active_theft_incidents'] as num?)?.toInt() ?? 0;
+      final crashCount = (metrics['active_crash_alerts'] as num?)?.toInt() ?? 0;
+      final critical = (metrics['critical_risk_vehicles'] as num?)?.toInt() ?? 0;
+      final latency = (metrics['avg_inference_latency_ms'] as num?)?.toDouble();
+
+      final risk = critical > 0
+          ? 80 + critical.clamp(0, 20)
+          : theftCount > 0
+              ? 55 + (theftCount * 5).clamp(0, 30)
+              : fallbackRisk;
+
+      final recent = (map['recent_predictions'] as List?) ?? const [];
+      final insights = <String>[
+        if (map['active_provider'] != null)
+          'Active model: ${map['active_provider']} (${map['active_model'] ?? 'n/a'})',
+        if (latency != null) 'Avg inference latency ${latency.round()} ms',
+        'Theft alerts active: $theftCount · Crash alerts: $crashCount',
+        if (recent.isNotEmpty)
+          'Latest: ${(recent.first as Map)['title'] ?? (recent.first as Map)['prediction_type'] ?? 'prediction'}',
+      ];
+
+      return AiOverviewSnapshot(
+        provider: (map['active_provider'] ?? 'Google Gemini').toString(),
+        model: (map['active_model'] ?? 'gemini-2.5-flash').toString(),
+        riskScore: risk.clamp(0, 100),
+        theftLabel: theftCount > 0 ? 'ALERT ($theftCount)' : 'ARMED',
+        crashLabel: crashCount > 0 ? 'ALERT ($crashCount)' : 'NORMAL',
+        connected: true,
+        insights: insights,
+      );
+    } on AppException catch (error) {
+      return AiOverviewSnapshot.fallback(
+        error: error.message,
+        riskScore: fallbackRisk,
+      );
+    } catch (error) {
+      return AiOverviewSnapshot.fallback(
+        error: error.toString(),
+        riskScore: fallbackRisk,
+      );
     }
-    return <String, dynamic>{
-      'riskScore': 18,
-      'theftRisk': 'LOW',
-      'crashRisk': 'NORMAL',
-      'aiStatus': 'Active (Gemini / Django)',
-    };
   }
 
-  /// Evaluate real-time AI theft detection for the vehicle.
-  Future<Map<String, dynamic>> evaluateTheftDetection(String vehicleId) async {
-    final response = await _guard(
-      () => _api.post(
-        ApiConstants.aiTheftDetection,
-        data: {'vehicleId': vehicleId},
-      ),
-    );
-    return response.data as Map<String, dynamic>;
-  }
-
-  /// Evaluate AI crash triage & impact severity.
-  Future<Map<String, dynamic>> evaluateCrashDetection(String vehicleId) async {
-    final response = await _guard(
-      () => _api.post(
-        ApiConstants.aiCrashDetection,
-        data: {'vehicleId': vehicleId},
-      ),
-    );
-    return response.data as Map<String, dynamic>;
-  }
-
-  /// Get unified dynamic vehicle risk score (0-100).
-  Future<int> getRiskScore(String vehicleId) async {
+  /// Vehicle risk detail from Django `/ai/vehicles/<id>/risk/`.
+  Future<Map<String, dynamic>?> getVehicleRisk(String vehicleId) async {
     try {
       final response = await _guard(
-        () => _api.get('${ApiConstants.aiRiskScore}/$vehicleId'),
+        () => _api.get(ApiConstants.aiVehicleRisk(vehicleId)),
       );
-      final data = response.data as Map<String, dynamic>;
-      return (data['score'] as num?)?.toInt() ?? 18;
+      if (response.data is Map<String, dynamic>) {
+        return response.data as Map<String, dynamic>;
+      }
+      return null;
     } catch (_) {
-      return 18; // Nominal fallback
+      return null;
     }
   }
 
-  /// Get automated AI-generated security insight explanations.
-  Future<List<String>> getAiInsights(String vehicleId) async {
+  Future<List<Map<String, dynamic>>> listTheftDetections() async {
     try {
-      final response = await _guard(
-        () => _api.get('${ApiConstants.aiInsights}/$vehicleId'),
-      );
-      final list = response.data['insights'] as List<dynamic>?;
-      return list?.map((e) => e.toString()).toList() ?? <String>[
-        'Vehicle CAN-bus latency stable at 14ms.',
-        'No unauthorized towing or geofence violations detected.',
-        'Remote immobilizer relay armed and verified.',
-      ];
+      final response = await _guard(() => _api.get(ApiConstants.aiTheftDetections));
+      final data = response.data;
+      if (data is List) {
+        return data.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+      }
+      if (data is Map && data['results'] is List) {
+        return (data['results'] as List)
+            .map((e) => Map<String, dynamic>.from(e as Map))
+            .toList();
+      }
+      return const [];
     } catch (_) {
-      return const [
-        'Vehicle telemetry operational with zero active anomalies.',
-        'Automated AI tamper guard armed.',
-      ];
+      return const [];
     }
   }
 
@@ -83,9 +142,9 @@ class AiRemoteDataSource {
     try {
       return await call();
     } on DioException catch (error) {
-      throw ServerException(
-        error.response?.data is Map<String, dynamic>
-            ? (error.response!.data as Map<String, dynamic>)['message']?.toString() ??
+      throw AppException(
+        error.response?.data is Map
+            ? (error.response!.data as Map)['message']?.toString() ??
                 'AI Engine service error'
             : 'AI Engine communication failure',
       );

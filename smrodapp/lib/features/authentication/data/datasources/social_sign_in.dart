@@ -1,3 +1,6 @@
+import 'dart:io' show Platform;
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -9,32 +12,90 @@ class SocialProfile {
     required this.provider,
     required this.email,
     required this.displayName,
+    this.idToken,
+    this.accessToken,
   });
 
   final String provider;
   final String email;
   final String displayName;
+  final String? idToken;
+  final String? accessToken;
 }
 
-/// Google and Apple sign-in. The pilot build still opens an owner session
-/// when the store accounts are not configured on the device.
+/// Google (v7) and Apple sign-in helpers.
 class SocialSignIn {
+  bool _googleReady = false;
+
+  Future<void> _ensureGoogleInitialized() async {
+    if (_googleReady) return;
+
+    final webClientId = AppConstants.googleWebClientId.trim();
+    if (webClientId.isEmpty || webClientId.startsWith('YOUR_WEB_CLIENT_ID')) {
+      throw const AppException(
+        'Add your Google Web Client ID in app_constants.dart (googleWebClientId).',
+      );
+    }
+
+    String? platformClientId;
+    if (!kIsWeb && Platform.isIOS) {
+      final iosId = AppConstants.googleIosClientId.trim();
+      platformClientId = iosId.isEmpty ? null : iosId;
+    } else if (!kIsWeb && Platform.isAndroid) {
+      final androidId = AppConstants.googleAndroidClientId.trim();
+      platformClientId = androidId.isEmpty ? null : androidId;
+    }
+
+    await GoogleSignIn.instance.initialize(
+      serverClientId: webClientId,
+      clientId: platformClientId,
+    );
+    _googleReady = true;
+  }
+
   Future<SocialProfile> google() async {
     try {
-      final account = await GoogleSignIn(scopes: const ['email']).signIn();
-      if (account == null) {
-        throw const AppException('Google sign-in was cancelled.');
+      await _ensureGoogleInitialized();
+
+      final googleSignIn = GoogleSignIn.instance;
+      final account = await googleSignIn.authenticate(
+        scopeHint: const ['email', 'profile'],
+      );
+
+      final idToken = account.authentication.idToken;
+      if (idToken == null || idToken.isEmpty) {
+        throw const AppException(
+          'Google ID token is missing. Check googleWebClientId (Web client ID) and SHA-1.',
+        );
       }
+
+      String? accessToken;
+      try {
+        final authz = await account.authorizationClient.authorizationForScopes(
+          const ['email', 'profile'],
+        );
+        accessToken = authz?.accessToken;
+      } catch (_) {
+        // Access token is optional for Supabase signInWithIdToken.
+      }
+
       return SocialProfile(
         provider: 'google',
         email: account.email,
         displayName: account.displayName?.trim().isNotEmpty == true
             ? account.displayName!.trim()
             : 'Google Owner',
+        idToken: idToken,
+        accessToken: accessToken,
       );
     } on AppException {
       rethrow;
-    } catch (_) {
+    } on GoogleSignInException catch (error) {
+      if (error.code == GoogleSignInExceptionCode.canceled) {
+        throw const AppException('Google sign-in was cancelled.');
+      }
+      throw AppException(error.description ?? 'Google sign-in failed.');
+    } catch (error) {
       if (AppConstants.usePilotData) {
         return const SocialProfile(
           provider: 'google',
@@ -42,7 +103,7 @@ class SocialSignIn {
           displayName: 'Google Owner',
         );
       }
-      throw const AppException('Google sign-in is not available on this device.');
+      throw AppException('Google sign-in failed: $error');
     }
   }
 
@@ -65,6 +126,7 @@ class SocialSignIn {
         provider: 'apple',
         email: credential.email ?? 'apple.owner@smrod.app',
         displayName: name.isEmpty ? 'Apple Owner' : name,
+        idToken: credential.identityToken,
       );
     } on SignInWithAppleAuthorizationException catch (error) {
       if (error.code == AuthorizationErrorCode.canceled) {

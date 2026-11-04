@@ -15,18 +15,14 @@ import {
   Copy,
   Check,
   Server,
-  Printer,
-  FileText,
   Zap,
   Activity,
   ShieldAlert
 } from 'lucide-react';
-import { HardwareManualModal } from './HardwareManualModal';
 
 export const ArchitectureReviewView: React.FC = () => {
   const [activeSection, setActiveSection] = useState<number>(1);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-  const [isManualModalOpen, setIsManualModalOpen] = useState<boolean>(false);
 
   const handleCopy = (text: string, idx: number) => {
     navigator.clipboard.writeText(text);
@@ -51,14 +47,6 @@ export const ArchitectureReviewView: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2.5">
-          <button
-            onClick={() => setIsManualModalOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow-sm transition-all hover:shadow cursor-pointer"
-          >
-            <Printer className="w-4 h-4" />
-            <span>Export / Print System Manual (PDF)</span>
-          </button>
-
           <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-semibold">
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>V2.4 Spec Ready</span>
@@ -600,14 +588,6 @@ CREATE TABLE remote_commands (
                 Embedded schematic architecture based on ESP32-S3-WROOM-1, Quectel EC200U-EU Cat-1/GNSS, LSM6DS3 IMU, and 9V–36V power protection.
               </p>
             </div>
-
-            <button
-              onClick={() => setIsManualModalOpen(true)}
-              className="inline-flex items-center gap-2 px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow-xs transition-colors cursor-pointer shrink-0"
-            >
-              <Printer className="w-4 h-4" />
-              <span>Open Printable PDF Manual</span>
-            </button>
           </div>
 
           {/* Subsystems Breakdown Grid */}
@@ -786,11 +766,6 @@ CREATE TABLE remote_commands (
         </div>
       )}
 
-      {/* Hardware Printable PDF Manual Modal */}
-      <HardwareManualModal
-        isOpen={isManualModalOpen}
-        onClose={() => setIsManualModalOpen(false)}
-      />
     </div>
   );
 };

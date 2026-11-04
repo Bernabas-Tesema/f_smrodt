@@ -41,7 +41,6 @@ class AuthRepositoryImpl implements AuthRepository {
         password: password,
       );
       final user = model.toEntity();
-      await _persist(user);
       return Success(user);
     } on AppException catch (error) {
       return ErrorResult(AuthFailure(error.message));

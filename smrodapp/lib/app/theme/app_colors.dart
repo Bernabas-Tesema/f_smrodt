@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 
-/// Application color palette taken from the SMROD mark.
+/// Warm paper, lacquer red, and ink. One palette for every screen.
 class AppColors {
   const AppColors._();
 
-  static const red = Color(0xFFE83020);
-  static const redDark = Color(0xFFB42316);
-  static const green = Color(0xFF009848);
-  static const greenDark = Color(0xFF067A3C);
-  static const ink = Color(0xFF17211C);
-  static const muted = Color(0xFF5E6B64);
-  static const line = Color(0xFFE2E8E4);
-  static const background = Color(0xFFF7F3F2);
-  static const amber = Color(0xFFC47B12);
+  static const red = Color(0xFFC81D1D);
+  static const redDark = Color(0xFF8C1212);
+  static const green = Color(0xFF0E8A55);
+  static const greenDark = Color(0xFF0A5C39);
+  static const ink = Color(0xFF141816);
+  static const muted = Color(0xFF6B726C);
+  static const line = Color(0xFFE4DDD4);
+  static const background = Color(0xFFF3EEE6);
+  static const paper = Color(0xFFFFFCF8);
+  static const amber = Color(0xFFB56A10);
 
   static Color forSeverity(String severity) {
     return switch (severity) {

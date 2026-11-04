@@ -147,6 +147,19 @@ class ProfileScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 16),
+            const Text('Help', style: AppTextStyles.title),
+            const SizedBox(height: 10),
+            Container(
+              decoration: AppTheme.card,
+              child: ListTile(
+                leading: const Icon(Icons.support_agent_outlined, color: AppColors.green),
+                title: const Text('Customer support'),
+                subtitle: const Text('Call, email, WhatsApp, FAQ, and messages'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => context.push('/support'),
+              ),
+            ),
+            const SizedBox(height: 16),
             SizedBox(
               height: 52,
               child: FilledButton(

@@ -26,7 +26,7 @@ class VehicleViewModel extends Notifier<VehicleState> {
   VehicleState build() {
     final data = ref.watch(pilotStoreProvider);
     final user = ref.watch(authViewModelProvider).user;
-    final current = data.vehicle;
+    final current = user == null ? data.vehicle : data.vehiclesByOwner[user.id] ?? data.vehicle;
     final vehicle = user != null && current?.ownerId == user.id
         ? current
         : _remoteVehicle?.ownerId == user?.id

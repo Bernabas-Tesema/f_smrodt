@@ -119,7 +119,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       style: FilledButton.styleFrom(
                         backgroundColor: AppColors.red,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(18),
                         ),
                       ),
                       child: Text(
@@ -158,74 +158,78 @@ class _IntroPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final illustrationHeight = (constraints.maxHeight * 0.42).clamp(
-          120.0,
-          260.0,
-        );
-        return Column(
-          children: [
-            SizedBox(
-              height: illustrationHeight,
-              child: FittedBox(
-                fit: BoxFit.contain,
-                child: _Illustration(art: art),
-              ),
-            ),
-            const Spacer(),
-            SizedBox(
-              height: 64,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    kicker,
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 28,
-                      height: 1.1,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.ink,
-                    ),
-                  ),
-                  Text(
-                    title,
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 28,
-                      height: 1.15,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.red,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 68,
-              child: Center(
-                child: Text(
-                  body,
-                  textAlign: TextAlign.center,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    height: 1.45,
-                    color: AppColors.muted,
+    return Column(
+      children: [
+        Expanded(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final shortest = constraints.maxWidth < constraints.maxHeight
+                  ? constraints.maxWidth
+                  : constraints.maxHeight;
+              final size = (shortest * 0.92).clamp(260.0, 380.0);
+              return Center(
+                child: SizedBox(
+                  width: size,
+                  height: size,
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    child: _Illustration(art: art),
                   ),
                 ),
+              );
+            },
+          ),
+        ),
+        SizedBox(
+          height: 64,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                kicker,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 28,
+                  height: 1.1,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.ink,
+                ),
+              ),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 28,
+                  height: 1.15,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.red,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+        SizedBox(
+          height: 68,
+          child: Center(
+            child: Text(
+              body,
+              textAlign: TextAlign.center,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 15,
+                height: 1.45,
+                color: AppColors.muted,
               ),
             ),
-          ],
-        );
-      },
+          ),
+        ),
+      ],
     );
   }
 }
@@ -235,8 +239,8 @@ class _Illustration extends StatelessWidget {
 
   final _Art art;
 
-  static const frameSize = 280.0;
-  static const circleSize = 246.0;
+  static const frameSize = 340.0;
+  static const circleSize = 312.0;
 
   @override
   Widget build(BuildContext context) {
@@ -250,8 +254,11 @@ class _Illustration extends StatelessWidget {
             width: circleSize,
             height: circleSize,
             decoration: const BoxDecoration(
-              color: Colors.white,
+              color: AppColors.paper,
               shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(color: Color(0x1A141816), blurRadius: 36, offset: Offset(0, 18)),
+              ],
             ),
           ),
           switch (art) {

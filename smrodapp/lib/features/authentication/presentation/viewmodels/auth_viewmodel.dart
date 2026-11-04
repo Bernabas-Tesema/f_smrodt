@@ -130,8 +130,8 @@ class AuthViewModel extends Notifier<AuthState> {
         state = state.copyWith(loading: false, error: failure.message);
         return false;
       },
-      (user) {
-        state = state.copyWith(user: user, loading: false, clearError: true);
+      (_) {
+        state = state.copyWith(loading: false, clearUser: true, clearError: true);
         return true;
       },
     );

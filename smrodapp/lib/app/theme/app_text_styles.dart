@@ -10,14 +10,15 @@ class AppTextStyles {
     fontSize: 28,
     fontWeight: FontWeight.w800,
     color: AppColors.ink,
-    letterSpacing: -0.6,
+    letterSpacing: -0.8,
+    height: 1.1,
   );
 
   static const title = TextStyle(
     fontSize: 18,
     fontWeight: FontWeight.w700,
     color: AppColors.ink,
-    letterSpacing: -0.2,
+    letterSpacing: -0.4,
   );
 
   static const body = TextStyle(

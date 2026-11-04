@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../app/theme/app_colors.dart';
 import 'brand_backdrop.dart';
@@ -88,13 +89,19 @@ class BrandedPage extends StatelessWidget {
       Text(
         title,
         textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w800, color: AppColors.ink, letterSpacing: -0.6),
+        style: GoogleFonts.manrope(
+          fontSize: 34,
+          fontWeight: FontWeight.w800,
+          color: AppColors.ink,
+          letterSpacing: -1.2,
+          height: 1.05,
+        ),
       ),
-      const SizedBox(height: 8),
+      const SizedBox(height: 10),
       Text(
         subtitle,
         textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 16, height: 1.4, color: AppColors.muted),
+        style: GoogleFonts.manrope(fontSize: 15, height: 1.45, color: AppColors.muted, fontWeight: FontWeight.w500),
       ),
       const SizedBox(height: 36),
       ...children,
@@ -108,13 +115,16 @@ class BrandLogoBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 92,
-      height: 92,
-      padding: const EdgeInsets.all(14),
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      width: 108,
+      height: 108,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: AppColors.paper,
         shape: BoxShape.circle,
-        boxShadow: [BoxShadow(color: Color(0x14000000), blurRadius: 16, offset: Offset(0, 8))],
+        border: Border.all(color: Colors.white, width: 6),
+        boxShadow: const [
+          BoxShadow(color: Color(0x1A141816), blurRadius: 28, offset: Offset(0, 14)),
+        ],
       ),
       child: Stack(
         clipBehavior: Clip.none,
@@ -147,11 +157,12 @@ class BrandedButton extends StatelessWidget {
         onPressed: loading ? null : onPressed,
         style: FilledButton.styleFrom(
           backgroundColor: AppColors.red,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
         ),
         child: loading
             ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-            : Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+            : Text(label, style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700, letterSpacing: -0.2)),
       ),
     );
   }
@@ -189,7 +200,7 @@ InputDecoration brandedInput({required String hint, IconData? icon, Widget? suff
     prefixIcon: icon == null ? null : Icon(icon, color: AppColors.muted),
     suffixIcon: suffix,
     filled: true,
-    fillColor: Colors.white,
+    fillColor: AppColors.paper,
     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
     border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
     enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),

@@ -103,7 +103,7 @@ class BiometricGateScreen extends ConsumerWidget {
                       style: FilledButton.styleFrom(
                         backgroundColor: AppColors.red,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(18),
                         ),
                       ),
                       onPressed: () => _continue(context, ref),

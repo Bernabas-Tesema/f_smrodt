@@ -31,15 +31,16 @@ class AppBottomNavigation extends StatelessWidget {
         : const Icon(Icons.notifications);
 
     return Container(
-      margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 14),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        color: AppColors.paper,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: AppColors.line),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x18000000),
-            blurRadius: 24,
-            offset: Offset(0, 8),
+            color: Color(0x14141816),
+            blurRadius: 28,
+            offset: Offset(0, 12),
           ),
         ],
       ),

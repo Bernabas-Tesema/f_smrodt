@@ -4,10 +4,11 @@ import 'app_constants.dart';
 class ApiConstants {
   const ApiConstants._();
 
-  /// Configurable backend URL with production fallback to Django REST Core.
+  /// Django AI / REST base. Override at build time:
+  /// `--dart-define=API_BASE_URL=http://10.0.2.2:8000/api/v1` (Android emulator)
   static const baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'https://api.smrod.ai/api/v1',
+    defaultValue: 'http://localhost:8000/api/v1',
   );
 
   // Supabase REST & Auth Direct Endpoints (Project: tobexeirhbjehfwrojty)
@@ -40,13 +41,20 @@ class ApiConstants {
   static const commands = '/vehicles/current/commands';
   static const securityEvents = '/vehicles/current/security/events';
 
-  // AI Intelligence System & Threat Engines
-  static const aiOverview = '/ai/overview';
-  static const aiTheftDetection = '/ai/theft-detection';
-  static const aiCrashDetection = '/ai/crash-detection';
+  // AI Intelligence System (matches Django apps.ai_engine.urls)
+  static const aiOverview = '/ai/overview/';
+  static const aiTheftDetections = '/ai/theft-detections/';
+  static const aiCrashDetections = '/ai/crash-detections/';
+  static const aiRiskDistribution = '/ai/risk-distribution/';
+  static const aiPerformance = '/ai/performance/';
+  static String aiVehicleRisk(String vehicleId) => '/ai/vehicles/$vehicleId/risk/';
+  static String aiInvestigate(String eventId) => '/ai/events/$eventId/analyze/';
+
+  // Legacy aliases kept for older call sites
+  static const aiTheftDetection = aiTheftDetections;
+  static const aiCrashDetection = aiCrashDetections;
   static const aiRiskScore = '/ai/risk-scoring';
   static const aiInsights = '/ai/insights';
-  static const aiInvestigate = '/ai/investigate';
 
   // Notifications, Emergencies & Geofences
   static const notifications = '/notifications';

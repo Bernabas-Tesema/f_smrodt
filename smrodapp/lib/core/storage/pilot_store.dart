@@ -72,6 +72,7 @@ class PilotData {
   const PilotData({
     required this.accounts,
     required this.vehicle,
+    required this.vehiclesByOwner,
     required this.history,
     required this.securityEvents,
     required this.commands,
@@ -84,6 +85,7 @@ class PilotData {
 
   final List<AccountRecord> accounts;
   final Vehicle? vehicle;
+  final Map<String, Vehicle> vehiclesByOwner;
   final List<VehicleLocation> history;
   final List<SecurityEvent> securityEvents;
   final List<VehicleCommand> commands;
@@ -121,6 +123,7 @@ class PilotData {
         ),
       ],
       vehicle: null,
+      vehiclesByOwner: const {},
       history: const [],
       securityEvents: const [],
       commands: const [],
@@ -135,6 +138,7 @@ class PilotData {
   PilotData copyWith({
     List<AccountRecord>? accounts,
     Object? vehicle = _keep,
+    Map<String, Vehicle>? vehiclesByOwner,
     List<VehicleLocation>? history,
     List<SecurityEvent>? securityEvents,
     List<VehicleCommand>? commands,
@@ -147,6 +151,7 @@ class PilotData {
     return PilotData(
       accounts: accounts ?? this.accounts,
       vehicle: identical(vehicle, _keep) ? this.vehicle : vehicle as Vehicle?,
+      vehiclesByOwner: vehiclesByOwner ?? this.vehiclesByOwner,
       history: history ?? this.history,
       securityEvents: securityEvents ?? this.securityEvents,
       commands: commands ?? this.commands,
@@ -161,6 +166,9 @@ class PilotData {
   Map<String, dynamic> toJson() => {
     'accounts': accounts.map((item) => item.toJson()).toList(),
     'vehicle': vehicle == null ? null : VehicleModel.fromEntity(vehicle!).toJson(),
+    'vehiclesByOwner': vehiclesByOwner.map(
+      (ownerId, item) => MapEntry(ownerId, VehicleModel.fromEntity(item).toJson()),
+    ),
     'history': history.map((item) => LocationModel.fromEntity(item).toJson()).toList(),
     'securityEvents': securityEvents
         .map((item) => SecurityEventModel.fromEntity(item).toJson())
@@ -180,11 +188,30 @@ class PilotData {
         .map((item) => AccountRecord.fromJson(item as Map<String, dynamic>))
         .toList();
     final vehicleJson = json['vehicle'];
+    final vehicle = vehicleJson is Map<String, dynamic>
+        ? VehicleModel.fromJson(vehicleJson).toEntity()
+        : null;
+    final saved = <String, Vehicle>{};
+    final rawOwners = json['vehiclesByOwner'];
+    if (rawOwners is Map) {
+      for (final entry in rawOwners.entries) {
+        final value = entry.value;
+        if (value is Map<String, dynamic>) {
+          saved[entry.key.toString()] = VehicleModel.fromJson(value).toEntity();
+        } else if (value is Map) {
+          saved[entry.key.toString()] = VehicleModel.fromJson(
+            value.map((key, item) => MapEntry(key.toString(), item)),
+          ).toEntity();
+        }
+      }
+    }
+    if (vehicle != null) {
+      saved.putIfAbsent(vehicle.ownerId, () => vehicle);
+    }
     return PilotData(
       accounts: accounts.isEmpty ? PilotData.empty().accounts : accounts,
-      vehicle: vehicleJson is Map<String, dynamic>
-          ? VehicleModel.fromJson(vehicleJson).toEntity()
-          : null,
+      vehicle: vehicle,
+      vehiclesByOwner: saved,
       history: (json['history'] as List<dynamic>? ?? const [])
           .map((item) => LocationModel.fromJson(item as Map<String, dynamic>).toEntity())
           .toList(),
@@ -313,6 +340,13 @@ class PilotStore extends Notifier<PilotData> {
   }
 
   void prepareSession(User user, {bool seedIfEmpty = false}) {
+    final saved = state.vehiclesByOwner[user.id];
+    if (saved != null) {
+      if (state.vehicle?.id != saved.id) {
+        _set(state.copyWith(vehicle: saved));
+      }
+      return;
+    }
     final demo = user.email == AppConstants.demoEmail;
     if (state.vehicle == null && (demo || seedIfEmpty)) {
       _set(_demoSnapshot(user));
@@ -373,9 +407,12 @@ class PilotStore extends Notifier<PilotData> {
       createdAt: now,
       read: false,
     );
+    final saved = Map<String, Vehicle>.from(state.vehiclesByOwner);
+    saved[owner.id] = vehicle;
     _set(
       state.copyWith(
         vehicle: vehicle,
+        vehiclesByOwner: saved,
         history: [_location(vehicle)],
         geofences: [zone],
         securityEvents: [
@@ -880,8 +917,11 @@ class PilotStore extends Notifier<PilotData> {
         address: 'Bole, Addis Ababa',
       );
     });
+    final saved = Map<String, Vehicle>.from(state.vehiclesByOwner);
+    saved[user.id] = vehicle;
     return state.copyWith(
       vehicle: vehicle,
+      vehiclesByOwner: saved,
       history: history.reversed.toList(),
       geofences: [_homeZone(vehicle)],
       securityEvents: [

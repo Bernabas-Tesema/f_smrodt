@@ -5,8 +5,8 @@ class AppConstants {
   static const appName = 'SMROD';
   static const tagline = 'Edge intelligence for connected vehicle safety.';
 
-  /// Pilot builds talk to the local store until the NestJS gateway is live.
-  static const usePilotData = true;
+  /// When false, auth goes to Supabase Auth (password grant / signup).
+  static const usePilotData = false;
 
   static const tokenKey = 'access_token';
   static const emailKey = 'session_email';
@@ -17,13 +17,31 @@ class AppConstants {
   static const demoEmail = 'owner@smrod.app';
   static const demoPassword = 'Smrod1234';
   static const emergencyContact = '+251 911 000 112';
+  static const supportPhone = '+251911000112';
+  static const supportEmail = 'support@smrod.ai';
+  static const supportWhatsApp = '+251911000112';
+  static const supportHours = 'Mon–Sat · 8:00–20:00 EAT';
 
   /// Supabase Cloud Credentials & Project Mapping
   static const supabaseProjectRef = 'tobexeirhbjehfwrojty';
   static const supabaseUrl = 'https://tobexeirhbjehfwrojty.supabase.co';
   static const supabaseRestUrl = 'https://tobexeirhbjehfwrojty.supabase.co/rest/v1';
   static const supabaseAnonKey =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvYmV4ZWlyaGJqZWhmd3JvanR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM2OTU2ODcsImV4cCI6MjEwOTI3MTY4N30.SFB7tCCWl8U5NKrJT72cYtCEcSr2usg-QppQ1SMWmQU';
+      'sb_publishable_WsbwClnOVSev3LYo3AgVgA_qsdPvo4b';
+
+  /// Google OAuth — paste IDs from Google Cloud Console → APIs & Services → Credentials
+  /// REQUIRED: Web application client ID (used as serverClientId for Android ID tokens)
+  static const googleWebClientId =
+      '282352212036-7tn5i0so9n9ddb8qqjranafpn3cigl84.apps.googleusercontent.com';
+
+  /// OPTIONAL: Android OAuth client ID (usually leave empty if package + SHA-1 are set)
+  static const googleAndroidClientId = '282352212036-lto40vc6q5ncq0g6q7vv26talhd67p4k.apps.googleusercontent.com';
+
+  /// OPTIONAL: iOS OAuth client ID (needed for iOS builds)
+  static const googleIosClientId = '282352212036-eqogpapfvgbklov0u0t5331jc6o2lg0v.apps.googleusercontent.com';
+
+  /// NEVER put Google Client Secret in the Flutter app.
+  /// Put Client Secret only in Supabase → Authentication → Providers → Google.
 
   static const homeLatitude = 9.0300;
   static const homeLongitude = 38.7400;

@@ -4,8 +4,14 @@ import { Settings, Shield, Server, Database, Radio, Check, Save, Key, Eye, EyeOf
 export const SystemConfigView: React.FC = () => {
   const [mqttHost, setMqttHost] = useState('mqtt.smrod.ai');
   const [mqttPort, setMqttPort] = useState('8883');
-  const [supabaseUrl, setSupabaseUrl] = useState('https://tobexeirhbjehfwrojty.supabase.co');
-  const [supabaseAnonKey, setSupabaseAnonKey] = useState('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvYmV4ZWlyaGJqZWhmd3JvanR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM2OTU2ODcsImV4cCI6MjEwOTI3MTY4N30.SFB7tCCWl8U5NKrJT72cYtCEcSr2usg-QppQ1SMWmQU');
+  const [supabaseUrl, setSupabaseUrl] = useState(
+    import.meta.env.VITE_SUPABASE_URL || 'https://tobexeirhbjehfwrojty.supabase.co'
+  );
+  const [supabaseAnonKey, setSupabaseAnonKey] = useState(
+    import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+      import.meta.env.VITE_SUPABASE_ANON_KEY ||
+      'sb_publishable_WsbwClnOVSev3LYo3AgVgA_qsdPvo4b'
+  );
   const [showKey, setShowKey] = useState(false);
   const [copiedKey, setCopiedKey] = useState(false);
   const [redisUrl, setRedisUrl] = useState('redis://cache.smrod.internal:6379/0');
