@@ -16,6 +16,13 @@ class AppConstants {
 
   static const demoEmail = 'owner@smrod.app';
   static const demoPassword = 'Smrod1234';
+
+  /// Where Supabase sends users after they click the email confirmation link.
+  /// Must also be allow-listed in Supabase → Auth → URL Configuration.
+  static const authEmailRedirectTo = String.fromEnvironment(
+    'AUTH_EMAIL_REDIRECT',
+    defaultValue: 'http://localhost:5173',
+  );
   static const emergencyContact = '+251 911 000 112';
   static const supportPhone = '+251911000112';
   static const supportEmail = 'support@smrod.ai';

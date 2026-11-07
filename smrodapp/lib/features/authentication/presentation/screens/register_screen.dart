@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
-
 import '../../../../app/theme/app_colors.dart';
+import '../../../../app/theme/app_fonts.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../shared/widgets/brand_backdrop.dart';
 import '../../../../shared/widgets/branded_page.dart';
@@ -61,13 +60,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 Text(
                   'Create Account',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.manrope(fontSize: 34, fontWeight: FontWeight.w800, color: AppColors.ink, letterSpacing: -1.2, height: 1.05),
+                  style: AppFonts.manrope(fontSize: 34, fontWeight: FontWeight.w800, color: AppColors.ink, letterSpacing: -1.2, height: 1.05),
                 ),
                 const SizedBox(height: 10),
                 Text(
                   'Sign up to get started with your dashboard.',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.manrope(fontSize: 15, height: 1.45, color: AppColors.muted, fontWeight: FontWeight.w500),
+                  style: AppFonts.manrope(fontSize: 15, height: 1.45, color: AppColors.muted, fontWeight: FontWeight.w500),
                 ),
                 const SizedBox(height: 32),
                 Form(

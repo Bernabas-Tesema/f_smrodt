@@ -150,12 +150,25 @@ CHANNEL_LAYERS = {
     },
 }
 
-# CORS Configuration for Admin Web Frontend
+# CORS Configuration for Admin Web Frontend + Flutter Web (random localhost ports)
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-    'http://localhost:5173',
-    'https://smrod.site',
+    origin.strip()
+    for origin in os.getenv(
+        'CORS_ALLOWED_ORIGINS',
+        'http://localhost:3000,http://localhost:5173,http://127.0.0.1:5173,https://smrod.site',
+    ).split(',')
+    if origin.strip()
 ]
+# Flutter `flutter run -d chrome` uses a changing localhost port — allow in DEBUG.
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True
+    CORS_ALLOW_CREDENTIALS = True
+else:
+    CORS_ALLOW_CREDENTIALS = True
+    CORS_ALLOWED_ORIGIN_REGEXES = [
+        r'^http://localhost:\d+$',
+        r'^http://127\.0\.0\.1:\d+$',
+    ]
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'

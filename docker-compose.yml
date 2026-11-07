@@ -1,4 +1,20 @@
 services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${DB_NAME:-smrod_db}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-smrod_local_dev_2026!}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - smrod_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-smrod_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   redis:
     image: redis:7-alpine
     ports:
@@ -6,7 +22,10 @@ services:
 
   web:
     build: ./backend
-    command: python manage.py runserver 0.0.0.0:8000
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             python manage.py ensure_admin &&
+             python manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./backend:/app
     ports:
@@ -16,7 +35,12 @@ services:
     environment:
       DJANGO_SETTINGS_MODULE: config.settings
       DJANGO_DEBUG: "True"
-      DB_ENGINE: sqlite
+      DB_ENGINE: postgresql
+      DB_NAME: ${DB_NAME:-smrod_db}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-smrod_local_dev_2026!}
+      DB_HOST: db
+      DB_PORT: "5432"
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/0
       REDIS_HOST: redis
@@ -27,7 +51,10 @@ services:
       SUPABASE_SECRET_KEY: ${SUPABASE_SECRET_KEY}
       SUPABASE_JWT_SECRET: ${SUPABASE_JWT_SECRET}
     depends_on:
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
 
   celery:
     build: ./backend
@@ -38,7 +65,13 @@ services:
       - .env
     environment:
       DJANGO_SETTINGS_MODULE: config.settings
-      DB_ENGINE: sqlite
+      DJANGO_DEBUG: "True"
+      DB_ENGINE: postgresql
+      DB_NAME: ${DB_NAME:-smrod_db}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-smrod_local_dev_2026!}
+      DB_HOST: db
+      DB_PORT: "5432"
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/0
       REDIS_HOST: redis
@@ -49,4 +82,10 @@ services:
       SUPABASE_SECRET_KEY: ${SUPABASE_SECRET_KEY}
       SUPABASE_JWT_SECRET: ${SUPABASE_JWT_SECRET}
     depends_on:
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+volumes:
+  smrod_pg_data:

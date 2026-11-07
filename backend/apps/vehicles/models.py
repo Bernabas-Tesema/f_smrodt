@@ -47,3 +47,22 @@ class Vehicle(models.Model):
 
     def __str__(self):
         return f'{self.plate_number} ({self.make} {self.model})'
+
+
+class VehicleStatusHistory(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='status_logs')
+    from_status = models.CharField(max_length=20, blank=True)
+    to_status = models.CharField(max_length=20)
+    from_security_status = models.CharField(max_length=20, blank=True)
+    to_security_status = models.CharField(max_length=20, blank=True)
+    reason = models.CharField(max_length=255, blank=True)
+    changed_by = models.CharField(max_length=120, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'smrod_vehicle_status_logs'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.vehicle_id}: {self.from_status} → {self.to_status}'

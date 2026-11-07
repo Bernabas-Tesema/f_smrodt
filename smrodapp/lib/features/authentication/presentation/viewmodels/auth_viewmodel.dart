@@ -18,6 +18,7 @@ class AuthState {
     this.biometricEnabled = false,
     this.canUnlockWithBiometric = false,
     this.error,
+    this.verificationNotice,
   });
 
   final User? user;
@@ -26,6 +27,8 @@ class AuthState {
   final bool biometricEnabled;
   final bool canUnlockWithBiometric;
   final String? error;
+  /// Stays visible across GoRouter refreshes (unlike route `extra`).
+  final String? verificationNotice;
 
   bool get isAuthenticated => user != null;
 
@@ -38,6 +41,8 @@ class AuthState {
     bool? canUnlockWithBiometric,
     String? error,
     bool clearError = false,
+    String? verificationNotice,
+    bool clearVerificationNotice = false,
   }) {
     return AuthState(
       user: clearUser ? null : (user ?? this.user),
@@ -47,6 +52,9 @@ class AuthState {
       canUnlockWithBiometric:
           canUnlockWithBiometric ?? this.canUnlockWithBiometric,
       error: clearError ? null : (error ?? this.error),
+      verificationNotice: clearVerificationNotice
+          ? null
+          : (verificationNotice ?? this.verificationNotice),
     );
   }
 }
@@ -93,7 +101,12 @@ class AuthViewModel extends Notifier<AuthState> {
         return false;
       },
       (user) {
-        state = state.copyWith(user: user, loading: false, clearError: true);
+        state = state.copyWith(
+          user: user,
+          loading: false,
+          clearError: true,
+          clearVerificationNotice: true,
+        );
         return true;
       },
     );
@@ -121,20 +134,47 @@ class AuthViewModel extends Notifier<AuthState> {
     required String email,
     required String password,
   }) async {
-    state = state.copyWith(loading: true, clearError: true);
+    state = state.copyWith(
+      loading: true,
+      clearError: true,
+      clearVerificationNotice: true,
+    );
+    final normalized = email.trim();
     final result = await ref
         .read(registerUserProvider)
-        .call(displayName: name, email: email, password: password);
+        .call(displayName: name, email: normalized, password: password);
     return result.fold(
       (failure) {
-        state = state.copyWith(loading: false, error: failure.message);
+        final msg = failure.message;
+        // Signup succeeded but email confirmation is required — treat as success.
+        if (msg.toLowerCase().contains('check your email')) {
+          state = state.copyWith(
+            loading: false,
+            clearUser: true,
+            clearError: true,
+            verificationNotice:
+                'We sent a verification email to $normalized. Open the link, then sign in.',
+          );
+          return true;
+        }
+        state = state.copyWith(loading: false, error: msg);
         return false;
       },
       (_) {
-        state = state.copyWith(loading: false, clearUser: true, clearError: true);
+        state = state.copyWith(
+          loading: false,
+          clearUser: true,
+          clearError: true,
+          verificationNotice:
+              'We sent a verification email to $normalized. Open the link, then sign in.',
+        );
         return true;
       },
     );
+  }
+
+  void clearVerificationNotice() {
+    state = state.copyWith(clearVerificationNotice: true);
   }
 
   Future<String?> forgotPassword(String email) async {

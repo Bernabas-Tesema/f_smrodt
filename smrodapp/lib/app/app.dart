@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../core/constants/app_constants.dart';
 import 'router/app_router.dart';
 import 'theme/app_colors.dart';
+import 'theme/app_fonts.dart';
 import 'theme/app_theme.dart';
 import '../features/authentication/presentation/viewmodels/auth_viewmodel.dart';
 
@@ -83,9 +83,9 @@ class _Splash extends StatelessWidget {
                   Text(
                     'VSCU-100',
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.orbitron(
+                    style: AppFonts.manrope(
                       fontSize: 34,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w800,
                       letterSpacing: 2.4,
                       color: AppColors.ink,
                     ),
@@ -96,8 +96,9 @@ class _Splash extends StatelessWidget {
                   Text(
                     'vehicle security control unit',
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.cormorantGaramond(
-                      fontSize: 20,
+                    style: AppFonts.manrope(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
                       fontStyle: FontStyle.italic,
                       letterSpacing: 0.6,
                       color: AppColors.redDark,

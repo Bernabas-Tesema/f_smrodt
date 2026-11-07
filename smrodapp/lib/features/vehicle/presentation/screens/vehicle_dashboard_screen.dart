@@ -403,7 +403,7 @@ class _AiIntelligenceCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final asyncAi = ref.watch(aiOverviewProvider);
-    final snapshot = asyncAi.valueOrNull ??
+    final snapshot = asyncAi.value ??
         AiOverviewSnapshot.fallback(riskScore: vehicle.riskScore);
     final loading = asyncAi.isLoading;
     final connected = snapshot.connected;

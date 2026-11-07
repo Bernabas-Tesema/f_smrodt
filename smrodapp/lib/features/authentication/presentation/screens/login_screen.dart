@@ -47,7 +47,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final auth = ref.watch(authViewModelProvider);
-    final noticeEmail = widget.noticeEmail;
+    final notice = auth.verificationNotice;
     return BrandedPage(
       title: 'Welcome Back',
       subtitle: 'Secure access to your vehicle dashboard.',
@@ -91,13 +91,34 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             child: const Text('Forgot Password?', style: TextStyle(color: AppColors.red, fontWeight: FontWeight.w700)),
           ),
         ),
-        if (noticeEmail != null)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Text(
-              'We sent a verification email to $noticeEmail. Open it, then sign in.',
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.greenDark, height: 1.4),
+        if (notice != null)
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.only(bottom: 14),
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: AppColors.green.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: AppColors.green.withValues(alpha: 0.35)),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.mark_email_read_outlined, color: AppColors.greenDark, size: 22),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    notice,
+                    style: const TextStyle(color: AppColors.greenDark, height: 1.45, fontWeight: FontWeight.w600),
+                  ),
+                ),
+                IconButton(
+                  visualDensity: VisualDensity.compact,
+                  onPressed: () =>
+                      ref.read(authViewModelProvider.notifier).clearVerificationNotice(),
+                  icon: const Icon(Icons.close, size: 18, color: AppColors.greenDark),
+                ),
+              ],
             ),
           ),
         if (auth.error != null)

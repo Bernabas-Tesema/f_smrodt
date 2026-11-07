@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
+import 'app_fonts.dart';
 
 /// Application theme configuration.
 class AppTheme {
@@ -20,14 +20,14 @@ class AppTheme {
       surface: AppColors.paper,
       onSurface: AppColors.ink,
     );
-    final text = GoogleFonts.manropeTextTheme().apply(
+    final text = AppFonts.textTheme().apply(
       bodyColor: AppColors.ink,
       displayColor: AppColors.ink,
     );
 
     return ThemeData(
       useMaterial3: true,
-      fontFamily: GoogleFonts.manrope().fontFamily,
+      fontFamily: AppFonts.family,
       textTheme: text,
       colorScheme: scheme,
       scaffoldBackgroundColor: AppColors.background,
@@ -44,7 +44,7 @@ class AppTheme {
         indicatorColor: AppColors.red.withValues(alpha: 0.14),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           final selected = states.contains(WidgetState.selected);
-          return GoogleFonts.manrope(
+          return AppFonts.manrope(
             fontSize: 11,
             fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
             letterSpacing: 0.1,

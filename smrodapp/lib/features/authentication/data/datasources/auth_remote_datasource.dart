@@ -61,39 +61,67 @@ class AuthRemoteDataSource {
       return UserModel.fromEntity(user);
     }
 
-    final response = await _supabasePost(
-      ApiConstants.supabaseSignUp,
-      data: {
-        'email': normalized,
-        'password': password,
-        'data': {
+    try {
+      final result = await Supabase.instance.client.auth.signUp(
+        email: normalized,
+        password: password,
+        data: {
           'display_name': displayName.trim(),
           'full_name': displayName.trim(),
           'role': 'owner',
         },
-      },
-    );
+        emailRedirectTo: AppConstants.authEmailRedirectTo,
+      );
 
-    final body = response.data;
-    if (body is Map) {
-      final user = body['user'];
-      if (user is Map && user['identities'] is List && (user['identities'] as List).isEmpty) {
-        throw const AppException('An account with that email already exists. Sign in instead.');
+      final user = result.user;
+      if (user != null && (user.identities == null || user.identities!.isEmpty)) {
+        throw const AppException(
+          'An account with that email already exists. Sign in instead.',
+        );
       }
-      // Email confirmation may be required — try password grant if session present.
-      if (body['access_token'] is String) {
-        return _userFromSupabaseAuth(response);
-      }
-    }
 
-    // Account created; sign in immediately when confirmation is disabled.
-    try {
-      return await login(email: normalized, password: password);
-    } on AppException {
+      final session = result.session;
+      if (session != null) {
+        await _secure.write(AppConstants.tokenKey, session.accessToken);
+        await _secure.write(AppConstants.emailKey, normalized);
+        final meta = user?.userMetadata ?? {};
+        return UserModel(
+          id: user?.id ?? '',
+          email: normalized,
+          displayName: (meta['full_name'] ?? meta['display_name'] ?? displayName)
+              .toString(),
+          role: (meta['role'] ?? 'owner').toString(),
+          mfaEnabled: false,
+        );
+      }
+
+      // Confirmation email is required — Supabase sends it via project SMTP.
       throw const AppException(
         'Account created. Check your email to confirm, then sign in.',
       );
+    } on AuthException catch (error) {
+      throw AppException(_mapAuthException(error.message));
+    } on AppException {
+      rethrow;
+    } catch (error) {
+      throw AppException(error.toString());
     }
+  }
+
+  String _mapAuthException(String message) {
+    final lower = message.toLowerCase();
+    if (lower.contains('already') || lower.contains('registered')) {
+      return 'An account with that email already exists. Sign in instead.';
+    }
+    if (lower.contains('password')) {
+      return message;
+    }
+    if (lower.contains('rate') || lower.contains('email')) {
+      return message;
+    }
+    return message.isEmpty
+        ? 'Signup failed. Check email/password and try again.'
+        : message;
   }
 
   Future<UserModel> loginWithProvider(String provider) async {

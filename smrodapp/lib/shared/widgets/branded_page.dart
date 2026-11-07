@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../app/theme/app_colors.dart';
+import '../../app/theme/app_fonts.dart';
 import 'brand_backdrop.dart';
 
 /// Sign-in page frame: curves, circular logo, centered title, then the form.
@@ -89,7 +89,7 @@ class BrandedPage extends StatelessWidget {
       Text(
         title,
         textAlign: TextAlign.center,
-        style: GoogleFonts.manrope(
+        style: AppFonts.manrope(
           fontSize: 34,
           fontWeight: FontWeight.w800,
           color: AppColors.ink,
@@ -101,7 +101,7 @@ class BrandedPage extends StatelessWidget {
       Text(
         subtitle,
         textAlign: TextAlign.center,
-        style: GoogleFonts.manrope(fontSize: 15, height: 1.45, color: AppColors.muted, fontWeight: FontWeight.w500),
+        style: AppFonts.manrope(fontSize: 15, height: 1.45, color: AppColors.muted, fontWeight: FontWeight.w500),
       ),
       const SizedBox(height: 36),
       ...children,
@@ -162,7 +162,7 @@ class BrandedButton extends StatelessWidget {
         ),
         child: loading
             ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-            : Text(label, style: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700, letterSpacing: -0.2)),
+            : Text(label, style: AppFonts.manrope(fontSize: 16, fontWeight: FontWeight.w700, letterSpacing: -0.2)),
       ),
     );
   }
