@@ -359,6 +359,12 @@ class PilotStore extends Notifier<PilotData> {
     return vehicle;
   }
 
+  void cacheVehicle(Vehicle vehicle) {
+    final saved = Map<String, Vehicle>.from(state.vehiclesByOwner);
+    saved[vehicle.ownerId] = vehicle;
+    _set(state.copyWith(vehicle: vehicle, vehiclesByOwner: saved));
+  }
+
   Vehicle pair({
     required User owner,
     required String serialNo,

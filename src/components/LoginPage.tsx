@@ -93,8 +93,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onContinue
       setAuthError('Enter the operator email to reset.');
       return;
     }
+    const configuredAppUrl = import.meta.env.VITE_APP_URL?.trim();
+    const redirectTo = configuredAppUrl || window.location.origin;
     const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-      redirectTo: window.location.origin,
+      redirectTo,
     });
     if (error) {
       setAuthError(error.message);

@@ -61,7 +61,7 @@ class VehicleViewModel extends Notifier<VehicleState> {
     _error = null;
     ref.invalidateSelf();
     final result = await ref.read(pairVehicleProvider).call(
-      ownerId: user.id,
+      owner: user,
       serialNo: serialNo,
       make: make,
       model: model,
@@ -73,6 +73,7 @@ class VehicleViewModel extends Notifier<VehicleState> {
       return false;
     }, (vehicle) {
       _remoteVehicle = vehicle;
+      ref.read(pilotStoreProvider.notifier).cacheVehicle(vehicle);
       _error = null;
       return true;
     });

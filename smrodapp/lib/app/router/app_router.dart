@@ -44,8 +44,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       final onBiometric = location == '/biometric';
       final hasVehicle = _hasVehicle(ref, auth.user?.id);
       if (!loggedIn && !onAuthPage && !onBiometric) return '/welcome';
+      if (onBiometric && !auth.canUnlockWithBiometric) {
+        if (!loggedIn) return '/login';
+        return hasVehicle ? '/dashboard' : '/pair';
+      }
       if (loggedIn && onAuthPage) return hasVehicle ? '/dashboard' : '/pair';
-      if (loggedIn && !hasVehicle && location != '/pair') return '/pair';
+      if (loggedIn && !hasVehicle && location != '/pair' && !onBiometric) {
+        return '/pair';
+      }
       if (loggedIn && hasVehicle && location == '/pair') return '/dashboard';
       return null;
     },

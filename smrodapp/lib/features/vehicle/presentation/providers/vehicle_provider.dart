@@ -15,7 +15,6 @@ final vehicleRepositoryProvider = Provider<VehicleRepository>((ref) {
       ref.watch(apiClientProvider),
       ref.watch(pilotStoreProvider.notifier),
     ),
-    ref.watch(pilotStoreProvider.notifier),
   );
 });
 

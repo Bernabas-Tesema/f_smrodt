@@ -40,11 +40,16 @@ import { SettingsView } from './components/SettingsView';
 import { EmergencyModal } from './components/EmergencyModal';
 import { LoginPage } from './components/LoginPage';
 import { AIIntelligenceView } from './components/AIIntelligenceView';
-import { SupabaseService } from './services/supabaseClient';
+import { supabase, SupabaseService } from './services/supabaseClient';
 import { roboticVoice } from './services/roboticVoice';
 import { CheckCircle2 } from 'lucide-react';
+import { PasswordRecoveryPage } from './components/PasswordRecoveryPage';
 
 export default function App() {
+  const [isPasswordRecovery, setIsPasswordRecovery] = useState(() => {
+    const hash = new URLSearchParams(window.location.hash.slice(1));
+    return hash.get('type') === 'recovery';
+  });
   const [currentTab, setCurrentTab] = useState<string>('dashboard');
   const [activeRole, setActiveRole] = useState<UserRole>('super_admin');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -77,6 +82,16 @@ export default function App() {
 
   // Live simulation mode
   const [isSimulating, setIsSimulating] = useState(true);
+
+  useEffect(() => {
+    const { data } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setIsPasswordRecovery(true);
+      }
+    });
+
+    return () => data.subscription.unsubscribe();
+  }, []);
 
   // Toast notification helper
   const showToast = (msg: string) => {
@@ -385,6 +400,19 @@ export default function App() {
 
   const criticalAlertCount = events.filter((e) => e.severity === 'critical' && e.status !== 'resolved').length;
   const canExecuteCommands = activeRole === 'super_admin' || activeRole === 'admin';
+
+  if (isPasswordRecovery) {
+    return (
+      <PasswordRecoveryPage
+        onComplete={async () => {
+          await supabase.auth.signOut();
+          window.history.replaceState({}, document.title, window.location.pathname);
+          setIsPasswordRecovery(false);
+          setCurrentTab('login-view');
+        }}
+      />
+    );
+  }
 
   // If in Login View, display full-screen S-curve login page matching image_4cec9828.png
   if (currentTab === 'login-view') {

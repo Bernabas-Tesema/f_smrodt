@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../shared/widgets/brand_backdrop.dart';
 
-/// Three-step introduction. Skip or Get Started opens biometric access first.
+/// Three-step introduction. Skip or Get Started opens the login screen.
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
 
@@ -48,7 +48,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   void _next() {
     if (_index == _pages.length - 1) {
-      context.go('/biometric');
+      context.go('/login');
       return;
     }
     _controller.nextPage(
@@ -663,4 +663,3 @@ class _SafetyArtState extends State<_SafetyArt>
     );
   }
 }
-
