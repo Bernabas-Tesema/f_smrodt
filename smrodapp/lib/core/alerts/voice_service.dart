@@ -131,7 +131,7 @@ class VoiceService {
 
   /// Demo robotic voice greeting.
   Future<void> testRoboticVoice() async {
-    await speak('SMROD Edge Intelligence online. All systems nominal. Security perimeter secure.');
+    await speak('VSCU-100 online. All systems nominal. Security perimeter secure.');
   }
 
   /// Speaks each alert in order so Critical, Warning, and Info are all heard.

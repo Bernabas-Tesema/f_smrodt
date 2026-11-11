@@ -44,7 +44,7 @@ class DeviceStatusCard extends StatelessWidget {
             value,
             style: AppTextStyles.body.copyWith(
               fontWeight: FontWeight.w700,
-              color: alert ? AppColors.red : AppColors.ink,
+              color: alert ? AppColors.danger : AppColors.ink,
             ),
           ),
         ],

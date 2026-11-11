@@ -62,14 +62,8 @@ class AppBottomNavigation extends StatelessWidget {
             label: 'Track',
           ),
           const NavigationDestination(
-            icon: IconTheme(
-              data: IconThemeData(color: AppColors.red),
-              child: Icon(Icons.shield_outlined),
-            ),
-            selectedIcon: IconTheme(
-              data: IconThemeData(color: AppColors.red),
-              child: Icon(Icons.shield_rounded),
-            ),
+            icon: Icon(Icons.shield_outlined, size: 30),
+            selectedIcon: Icon(Icons.shield_rounded, size: 30),
             label: 'Security',
           ),
           NavigationDestination(

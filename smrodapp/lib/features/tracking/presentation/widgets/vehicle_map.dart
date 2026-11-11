@@ -6,7 +6,7 @@ import '../../../../app/theme/app_colors.dart';
 import '../../../geofence/domain/entities/geofence.dart';
 import '../../domain/entities/vehicle_location.dart';
 
-enum MapTileStyle { navigationDay, satelliteStreets, cartoVoyager }
+enum MapTileStyle { streets, satellite, night }
 
 /// Enhanced Vehicle map widget with real Mapbox & CartoDB tiles, heading rotation, and pulse animations.
 class VehicleMap extends StatefulWidget {
@@ -32,7 +32,7 @@ class VehicleMap extends StatefulWidget {
 
 class _VehicleMapState extends State<VehicleMap> with SingleTickerProviderStateMixin {
   final MapController _controller = MapController();
-  MapTileStyle _tileStyle = MapTileStyle.navigationDay;
+  MapTileStyle _tileStyle = MapTileStyle.streets;
   late final AnimationController _pulseController;
   late final Animation<double> _pulseAnimation;
 
@@ -74,13 +74,25 @@ class _VehicleMapState extends State<VehicleMap> with SingleTickerProviderStateM
   }
 
   String _getTileUrl() {
+    final token = VehicleMap.mapboxToken;
     switch (_tileStyle) {
-      case MapTileStyle.navigationDay:
-        return 'https://api.mapbox.com/styles/v1/mapbox/navigation-day-v1/tiles/256/{z}/{x}/{y}@2x?access_token=${VehicleMap.mapboxToken}';
-      case MapTileStyle.satelliteStreets:
-        return 'https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/tiles/256/{z}/{x}/{y}@2x?access_token=${VehicleMap.mapboxToken}';
-      case MapTileStyle.cartoVoyager:
-        return 'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png';
+      case MapTileStyle.streets:
+        return 'https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/{z}/{x}/{y}?access_token=$token';
+      case MapTileStyle.satellite:
+        return 'https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/tiles/{z}/{x}/{y}?access_token=$token';
+      case MapTileStyle.night:
+        return 'https://api.mapbox.com/styles/v1/mapbox/navigation-night-v1/tiles/{z}/{x}/{y}?access_token=$token';
+    }
+  }
+
+  String _fallbackUrl() {
+    switch (_tileStyle) {
+      case MapTileStyle.streets:
+        return 'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png';
+      case MapTileStyle.satellite:
+        return 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+      case MapTileStyle.night:
+        return 'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png';
     }
   }
 
@@ -105,9 +117,12 @@ class _VehicleMapState extends State<VehicleMap> with SingleTickerProviderStateM
           children: [
             TileLayer(
               urlTemplate: _getTileUrl(),
+              fallbackUrl: _fallbackUrl(),
               userAgentPackageName: 'com.smrod.vehicle',
-              tileDimension: 256,
-              retinaMode: true,
+              tileDimension: 512,
+              zoomOffset: -1,
+              maxNativeZoom: 19,
+              retinaMode: false,
             ),
             CircleLayer(
               circles: [
@@ -117,8 +132,8 @@ class _VehicleMapState extends State<VehicleMap> with SingleTickerProviderStateM
                       point: LatLng(zone.centerLat, zone.centerLng),
                       radius: zone.radiusMeters,
                       useRadiusInMeter: true,
-                      color: AppColors.green.withValues(alpha: 0.16),
-                      borderColor: AppColors.green,
+                      color: AppColors.tide.withValues(alpha: 0.16),
+                      borderColor: AppColors.tide,
                       borderStrokeWidth: 2.5,
                     ),
               ],
@@ -155,7 +170,7 @@ class _VehicleMapState extends State<VehicleMap> with SingleTickerProviderStateM
                                 height: 52,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: (widget.immobilized ? AppColors.green : AppColors.red)
+                                  color: (widget.immobilized ? AppColors.danger : AppColors.primary)
                                       .withValues(alpha: 0.4),
                                 ),
                               ),
@@ -164,7 +179,7 @@ class _VehicleMapState extends State<VehicleMap> with SingleTickerProviderStateM
                           // Core Vehicle Marker Badge
                           DecoratedBox(
                             decoration: BoxDecoration(
-                              color: widget.immobilized ? AppColors.green : AppColors.red,
+                              color: widget.immobilized ? AppColors.danger : AppColors.primary,
                               shape: BoxShape.circle,
                               border: Border.all(color: Colors.white, width: 3),
                               boxShadow: const [
@@ -214,9 +229,9 @@ class _VehicleMapState extends State<VehicleMap> with SingleTickerProviderStateM
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _tileButton('Nav', MapTileStyle.navigationDay),
-                _tileButton('Sat', MapTileStyle.satelliteStreets),
-                _tileButton('Voyager', MapTileStyle.cartoVoyager),
+                _tileButton('Streets', MapTileStyle.streets),
+                _tileButton('Sat', MapTileStyle.satellite),
+                _tileButton('Night', MapTileStyle.night),
               ],
             ),
           ),
@@ -248,7 +263,7 @@ class _VehicleMapState extends State<VehicleMap> with SingleTickerProviderStateM
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
         decoration: BoxDecoration(
-          color: active ? AppColors.greenDark : Colors.transparent,
+          color: active ? AppColors.primary : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Text(

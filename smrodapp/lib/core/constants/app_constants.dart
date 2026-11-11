@@ -2,7 +2,7 @@
 class AppConstants {
   const AppConstants._();
 
-  static const appName = 'SMROD';
+  static const appName = 'VSCU-100';
   static const tagline = 'Edge intelligence for connected vehicle safety.';
 
   /// When false, auth goes to Supabase Auth (password grant / signup).

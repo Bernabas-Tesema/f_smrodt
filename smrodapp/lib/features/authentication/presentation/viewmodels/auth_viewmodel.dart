@@ -62,10 +62,11 @@ class AuthState {
 /// Authentication view model.
 class AuthViewModel extends Notifier<AuthState> {
   @override
-  AuthState build() => const AuthState();
+  AuthState build() => const AuthState(restoring: true);
 
   Future<void> restoreSession() async {
     if (state.isAuthenticated) return;
+    state = state.copyWith(restoring: true, clearError: true);
     try {
       final secure = ref.read(secureStorageProvider);
       final biometricOn = await secure.read(AppConstants.biometricKey) == '1';
@@ -73,6 +74,7 @@ class AuthViewModel extends Notifier<AuthState> {
       if (state.isAuthenticated) return;
       final user = restored.fold((_) => null, (value) => value);
       if (biometricOn && user != null) {
+        // Keep the session locked until fingerprint unlock succeeds.
         state = AuthState(
           restoring: false,
           biometricEnabled: true,
@@ -254,9 +256,22 @@ class AuthViewModel extends Notifier<AuthState> {
       state = state.copyWith(biometricEnabled: false, clearError: true);
       return;
     }
+    final capability = await ref.read(biometricServiceProvider).detectCapability();
+    if (!capability.available) {
+      state = state.copyWith(
+        error: 'This phone has no fingerprint or face unlock to use.',
+      );
+      return;
+    }
     final outcome = await ref
         .read(biometricServiceProvider)
         .authenticate('Enable the ${AppConstants.appName} app lock');
+    if (outcome == BiometricOutcome.unavailable) {
+      state = state.copyWith(
+        error: 'This phone has no fingerprint or face unlock to use.',
+      );
+      return;
+    }
     if (outcome == BiometricOutcome.failed) {
       state = state.copyWith(error: 'App lock was not enabled.');
       return;

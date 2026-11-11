@@ -17,6 +17,10 @@ final biometricServiceProvider = Provider<BiometricService>(
   (ref) => BiometricService(),
 );
 
+final biometricCapabilityProvider = FutureProvider<BiometricCapability>((ref) {
+  return ref.watch(biometricServiceProvider).detectCapability();
+});
+
 final apiClientProvider = Provider<ApiClient>(
   (ref) => ApiClient(ref.watch(secureStorageProvider)),
 );

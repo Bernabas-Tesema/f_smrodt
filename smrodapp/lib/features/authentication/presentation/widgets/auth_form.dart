@@ -76,7 +76,7 @@ class AuthForm extends StatelessWidget {
           ],
           if (error != null) ...[
             const SizedBox(height: 12),
-            Text(error!, style: AppTextStyles.caption.copyWith(color: AppColors.red)),
+            Text(error!, style: AppTextStyles.caption.copyWith(color: AppColors.danger)),
           ],
           const SizedBox(height: 18),
           AppButton(label: submitLabel, onPressed: onSubmit, loading: loading, tone: tone),

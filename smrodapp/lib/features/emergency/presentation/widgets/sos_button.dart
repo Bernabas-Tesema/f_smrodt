@@ -22,7 +22,7 @@ class SosButton extends StatelessWidget {
             height: 200,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: AppColors.red.withValues(alpha: 0.12)),
+              border: Border.all(color: AppColors.danger.withValues(alpha: 0.12)),
             ),
           ),
           Container(
@@ -30,7 +30,7 @@ class SosButton extends StatelessWidget {
             height: 156,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.red.withValues(alpha: 0.08),
+              color: AppColors.danger.withValues(alpha: 0.08),
             ),
           ),
           SizedBox(
@@ -39,7 +39,7 @@ class SosButton extends StatelessWidget {
             child: FilledButton(
               onPressed: busy ? null : onPressed,
               style: FilledButton.styleFrom(
-                backgroundColor: AppColors.red,
+                backgroundColor: AppColors.danger,
                 shape: const CircleBorder(),
                 padding: EdgeInsets.zero,
               ),

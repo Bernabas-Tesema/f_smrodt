@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app/theme/app_colors.dart';
-import '../../../../shared/widgets/brand_backdrop.dart';
 
 /// Three-step introduction. Skip or Get Started opens the login screen.
 class WelcomeScreen extends StatefulWidget {
@@ -62,80 +61,72 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     final last = _index == _pages.length - 1;
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: Stack(
-        children: [
-          const BrandBackdrop(),
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
-              child: Column(
+      body: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 20),
+          child: Column(
+            children: [
+              Align(
+                alignment: Alignment.centerRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 12),
+                  child: TextButton(
+                    onPressed: () => context.go('/login'),
+                    child: const Text(
+                      'Skip',
+                      style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: PageView.builder(
+                  controller: _controller,
+                  itemCount: _pages.length,
+                  onPageChanged: (value) => setState(() => _index = value),
+                  itemBuilder: (context, index) => _pages[index],
+                ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () => context.go('/login'),
-                      child: const Text(
-                        'Skip',
-                        style: TextStyle(
-                          color: AppColors.muted,
-                          fontWeight: FontWeight.w600,
-                        ),
+                  for (var i = 0; i < _pages.length; i++)
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      width: i == _index ? 22 : 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: i == _index ? AppColors.primary : const Color(0xFFC5D2DC),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: PageView.builder(
-                      controller: _controller,
-                      itemCount: _pages.length,
-                      onPageChanged: (value) => setState(() => _index = value),
-                      itemBuilder: (context, index) => _pages[index],
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      for (var i = 0; i < _pages.length; i++)
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          margin: const EdgeInsets.symmetric(horizontal: 4),
-                          width: i == _index ? 22 : 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            color: i == _index
-                                ? AppColors.red
-                                : const Color(0xFFD9D3D1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 22),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: FilledButton(
-                      onPressed: _next,
-                      style: FilledButton.styleFrom(
-                        backgroundColor: AppColors.red,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                      ),
-                      child: Text(
-                        last ? 'Get Started' : 'Continue',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ),
                 ],
               ),
-            ),
+              const SizedBox(height: 22),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: FilledButton(
+                    onPressed: _next,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.red,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                    ),
+                    child: Text(
+                      last ? 'Get Started' : 'Continue',
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -206,7 +197,7 @@ class _IntroPage extends StatelessWidget {
                   fontSize: 28,
                   height: 1.15,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.red,
+                  color: AppColors.tide,
                 ),
               ),
             ],

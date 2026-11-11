@@ -6,6 +6,7 @@ import 'router/app_router.dart';
 import 'theme/app_colors.dart';
 import 'theme/app_fonts.dart';
 import 'theme/app_theme.dart';
+import '../shared/widgets/vscu_mark.dart';
 import '../features/authentication/presentation/viewmodels/auth_viewmodel.dart';
 
 /// Application composition root.
@@ -53,64 +54,57 @@ class _Splash extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.asset(
-            'assets/images/bacimage.jpg',
-            fit: BoxFit.cover,
-            alignment: Alignment.centerRight,
-          ),
-          const DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xF2F3EEE6),
-                  Color(0xC7F3EEE6),
-                  Color(0xF2F3EEE6),
-                ],
+      backgroundColor: AppColors.background,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 118,
+                height: 118,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.background,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppColors.primary.withValues(alpha: 0.22), width: 2),
+                  boxShadow: const [
+                    BoxShadow(color: Color(0x22102820), blurRadius: 22, offset: Offset(0, 10)),
+                  ],
+                ),
+                child: const VscuMark(size: 90),
               ),
-            ),
-          ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 28),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'VSCU-100',
-                    textAlign: TextAlign.center,
-                    style: AppFonts.manrope(
-                      fontSize: 34,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 2.4,
-                      color: AppColors.ink,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Container(width: 72, height: 3, color: AppColors.red),
-                  const SizedBox(height: 12),
-                  Text(
-                    'vehicle security control unit',
-                    textAlign: TextAlign.center,
-                    style: AppFonts.manrope(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      fontStyle: FontStyle.italic,
-                      letterSpacing: 0.6,
-                      color: AppColors.redDark,
-                    ),
-                  ),
-                  const SizedBox(height: 28),
-                  const CircularProgressIndicator(color: AppColors.red),
-                ],
+              const SizedBox(height: 18),
+              Text(
+                'VSCU-100',
+                textAlign: TextAlign.center,
+                style: AppFonts.manrope(
+                  fontSize: 34,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 2.4,
+                  color: AppColors.ink,
+                ),
               ),
-            ),
+              const SizedBox(height: 10),
+              Container(width: 72, height: 3, color: AppColors.brass),
+              const SizedBox(height: 12),
+              Text(
+                'vehicle security control unit',
+                textAlign: TextAlign.center,
+                style: AppFonts.manrope(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  fontStyle: FontStyle.italic,
+                  letterSpacing: 0.6,
+                  color: AppColors.primary,
+                ),
+              ),
+              const SizedBox(height: 28),
+              const CircularProgressIndicator(color: AppColors.primary),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

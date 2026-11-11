@@ -26,13 +26,15 @@ class VehicleDetailsScreen extends ConsumerWidget {
     final moving = vehicle.speedKph >= 3;
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: Text(vehicle.title)),
-      body: Stack(
-        children: [
-          const BrandBackdrop(),
-          ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            CurveHeader(title: vehicle.title, subtitle: vehicle.plateNo),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                children: [
           Container(
             decoration: AppTheme.card,
             padding: const EdgeInsets.all(16),
@@ -71,9 +73,11 @@ class VehicleDetailsScreen extends ConsumerWidget {
               ),
             ],
           ),
-        ],
-          ),
-        ],
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

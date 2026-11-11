@@ -10,6 +10,9 @@ import '../../../../app/theme/app_text_styles.dart';
 import '../../../../app/theme/app_theme.dart';
 import '../../../../core/alerts/voice_service.dart';
 import '../../../../shared/extensions/context_extensions.dart';
+import '../../../../shared/widgets/brand_backdrop.dart';
+import '../../../../shared/widgets/vscu_mark.dart';
+import '../providers/auth_provider.dart';
 import '../providers/profile_photo_provider.dart';
 import '../viewmodels/auth_viewmodel.dart';
 
@@ -23,22 +26,30 @@ class ProfileScreen extends ConsumerWidget {
     final user = auth.user;
     final photoPath = ref.watch(profilePhotoProvider);
     final voiceEnabled = ref.watch(roboticVoiceEnabledProvider);
+    final capability = ref.watch(biometricCapabilityProvider).asData?.value;
+    final phoneReady = capability?.available ?? false;
+    final phoneLabel = capability?.label ?? 'Checking fingerprint access on this phone...';
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(16),
+        bottom: false,
+        child: Column(
           children: [
-            const SizedBox(height: 12),
+            const CurveHeader(title: 'Profile', subtitle: 'Account, access, and voice.'),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                children: [
+            const SizedBox(height: 4),
             Container(
               padding: const EdgeInsets.fromLTRB(18, 20, 18, 18),
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [AppColors.red, AppColors.green],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                color: Colors.white.withValues(alpha: 0.94),
                 borderRadius: BorderRadius.circular(28),
+                border: Border.all(color: Colors.white),
+                boxShadow: const [
+                  BoxShadow(color: Color(0x24102820), blurRadius: 28, offset: Offset(0, 16)),
+                ],
               ),
               child: Column(
                 children: [
@@ -51,7 +62,7 @@ class ProfileScreen extends ConsumerWidget {
                     user?.displayName ?? 'Owner',
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: AppColors.ink,
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
                     ),
@@ -60,7 +71,7 @@ class ProfileScreen extends ConsumerWidget {
                   Text(
                     user?.email ?? '',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.white70),
+                    style: const TextStyle(color: AppColors.muted),
                   ),
                 ],
               ),
@@ -72,10 +83,12 @@ class ProfileScreen extends ConsumerWidget {
               decoration: AppTheme.card,
               child: ListTile(
                 leading: const _FingerprintBadge(size: 44),
-                title: const Text('Fingerprint screen'),
-                subtitle: const Text('Open the biometric access screen.'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => context.push('/biometric'),
+                title: const Text('Phone biometric access'),
+                subtitle: Text(phoneLabel),
+                trailing: Icon(
+                  phoneReady ? Icons.verified_outlined : Icons.info_outline,
+                  color: phoneReady ? AppColors.tide : AppColors.amber,
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -86,13 +99,21 @@ class ProfileScreen extends ConsumerWidget {
                 title: const Text('Biometric app lock'),
                 subtitle: Text(
                   auth.error ??
-                      'Use your fingerprint the next time the app opens.',
+                      (phoneReady
+                          ? 'Use your fingerprint the next time the app opens, before the sign-in page.'
+                          : 'Turn this on after the phone has fingerprint or face unlock.'),
                 ),
                 value: auth.biometricEnabled,
                 activeThumbColor: AppColors.green,
-                onChanged: (value) => ref
-                    .read(authViewModelProvider.notifier)
-                    .setBiometric(value),
+                onChanged: (value) async {
+                  if (value && capability != null && !capability.available) {
+                    context.showMessage(
+                      'This phone has no fingerprint or face unlock to use.',
+                    );
+                    return;
+                  }
+                  await ref.read(authViewModelProvider.notifier).setBiometric(value);
+                },
               ),
             ),
             const SizedBox(height: 16),
@@ -174,6 +195,9 @@ class ProfileScreen extends ConsumerWidget {
                 child: const Text('Log out'),
               ),
             ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -204,7 +228,7 @@ class ProfileScreen extends ConsumerWidget {
                 ListTile(
                   leading: const Icon(
                     Icons.delete_outline,
-                    color: AppColors.red,
+                    color: AppColors.danger,
                   ),
                   title: const Text('Remove photo'),
                   onTap: () => Navigator.pop(context, _PhotoChoice.remove),
@@ -272,10 +296,8 @@ class _PhotoAdder extends StatelessWidget {
                 child: hasPhoto
                     ? Image.file(file, fit: BoxFit.cover)
                     : const Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Image(
-                          image: AssetImage('assets/images/smrod_logo.png'),
-                        ),
+                        padding: EdgeInsets.all(6),
+                        child: VscuMark(),
                       ),
               ),
               const Positioned(
@@ -283,8 +305,8 @@ class _PhotoAdder extends StatelessWidget {
                 bottom: 8,
                 child: CircleAvatar(
                   radius: 16,
-                  backgroundColor: AppColors.red,
-                  child: Icon(Icons.add_a_photo, size: 16, color: Colors.white),
+                  backgroundColor: AppColors.brass,
+                  child: Icon(Icons.add_a_photo, size: 16, color: AppColors.ink),
                 ),
               ),
             ],

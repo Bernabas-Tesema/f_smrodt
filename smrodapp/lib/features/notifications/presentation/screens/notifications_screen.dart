@@ -5,6 +5,7 @@ import '../../../../app/theme/app_colors.dart';
 import '../../../../core/alerts/voice_service.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../shared/widgets/asset_glyph.dart';
+import '../../../../shared/widgets/brand_backdrop.dart';
 import '../../../../shared/widgets/empty_state_view.dart';
 import '../providers/notification_provider.dart';
 import '../widgets/notification_tile.dart';
@@ -40,17 +41,17 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     final visible = _filter == null ? alerts : alerts.where((alert) => alert.severity == _filter).toList();
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        title: const Text('Alerts'),
-        actions: [
-          TextButton(
-            onPressed: alerts.isEmpty ? null : () => ref.read(notificationProvider.notifier).markAllRead(),
-            child: const Text('Mark read'),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            CurveHeader(
+              title: 'Alerts',
+              trailing: TextButton(
+                onPressed: alerts.isEmpty ? null : () => ref.read(notificationProvider.notifier).markAllRead(),
+                child: const Text('Mark read', style: TextStyle(color: Colors.white)),
+              ),
+            ),
           SizedBox(
             height: 48,
             child: ListView(
@@ -83,6 +84,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                   ),
           ),
         ],
+        ),
       ),
     );
   }

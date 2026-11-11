@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -36,15 +37,18 @@ class AppScaffold extends ConsumerWidget {
       }
     });
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Stack(children: [const BrandBackdrop(), navigationShell]),
-      bottomNavigationBar: AppBottomNavigation(
-        currentIndex: navigationShell.currentIndex,
-        unreadCount: unread,
-        onTap: (index) => navigationShell.goBranch(
-          index,
-          initialLocation: index == navigationShell.currentIndex,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.dark,
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        body: Stack(children: [const BrandBackdrop(), navigationShell]),
+        bottomNavigationBar: AppBottomNavigation(
+          currentIndex: navigationShell.currentIndex,
+          unreadCount: unread,
+          onTap: (index) => navigationShell.goBranch(
+            index,
+            initialLocation: index == navigationShell.currentIndex,
+          ),
         ),
       ),
     );

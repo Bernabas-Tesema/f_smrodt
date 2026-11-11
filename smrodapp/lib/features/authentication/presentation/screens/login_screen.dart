@@ -124,7 +124,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         if (auth.error != null)
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
-            child: Text(auth.error!, style: const TextStyle(color: AppColors.red)),
+            child: Text(auth.error!, style: const TextStyle(color: AppColors.danger)),
           ),
         BrandedButton(label: 'Login', onPressed: _submit, loading: auth.loading),
         const SizedBox(height: 18),
@@ -138,7 +138,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             Expanded(child: Divider()),
           ],
         ),
-        const SizedBox(height: 18),
+        const SizedBox(height: 26),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

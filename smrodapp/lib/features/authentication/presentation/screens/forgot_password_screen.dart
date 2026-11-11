@@ -60,7 +60,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         if (_notice != null)
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
-            child: Text(_notice!, style: TextStyle(color: failed ? AppColors.red : AppColors.greenDark)),
+            child: Text(_notice!, style: TextStyle(color: failed ? AppColors.danger : AppColors.tideDark)),
           ),
         BrandedButton(label: 'Send reset', onPressed: _submit, loading: auth.loading),
       ],

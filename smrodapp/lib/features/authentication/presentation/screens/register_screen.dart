@@ -50,25 +50,47 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       backgroundColor: AppColors.background,
       body: Stack(
         children: [
-          const BrandBackdrop(),
+          const CornerCurves(),
           SafeArea(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
-              children: [
-                const Center(child: BrandLogoBadge()),
-                const SizedBox(height: 28),
-                Text(
-                  'Create Account',
-                  textAlign: TextAlign.center,
-                  style: AppFonts.manrope(fontSize: 34, fontWeight: FontWeight.w800, color: AppColors.ink, letterSpacing: -1.2, height: 1.05),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  'Sign up to get started with your dashboard.',
-                  textAlign: TextAlign.center,
-                  style: AppFonts.manrope(fontSize: 15, height: 1.45, color: AppColors.muted, fontWeight: FontWeight.w500),
-                ),
-                const SizedBox(height: 32),
+        bottom: false,
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+              child: Column(
+                children: [
+                  const Center(child: BrandLogoBadge()),
+                  const SizedBox(height: 20),
+                  Text(
+                    'Create Account',
+                    textAlign: TextAlign.center,
+                    style: AppFonts.manrope(
+                      fontSize: 30,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.ink,
+                      letterSpacing: -0.8,
+                      height: 1.05,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Sign up to get started with your dashboard.',
+                    textAlign: TextAlign.center,
+                    style: AppFonts.manrope(
+                      fontSize: 15,
+                      height: 1.4,
+                      color: AppColors.ink,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
+              child: Column(
+                children: [
                 Form(
                   key: _formKey,
                   child: Column(
@@ -116,7 +138,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 if (auth.error != null)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 8),
-                    child: Text(auth.error!, style: const TextStyle(color: AppColors.red)),
+                    child: Text(auth.error!, style: const TextStyle(color: AppColors.danger)),
                   ),
                 BrandedButton(label: 'Create Account', onPressed: _submit, loading: auth.loading),
                 const SizedBox(height: 22),
@@ -130,7 +152,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     Expanded(child: Divider()),
                   ],
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: 26),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -157,9 +179,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     ),
                   ],
                 ),
-              ],
+                ],
+              ),
             ),
-          ),
+          ],
+        ),
+      ),
         ],
       ),
     );

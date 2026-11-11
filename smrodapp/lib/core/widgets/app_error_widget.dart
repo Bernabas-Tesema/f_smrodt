@@ -19,7 +19,7 @@ class AppErrorWidget extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.wifi_off_rounded, color: AppColors.red, size: 36),
+            const Icon(Icons.wifi_off_rounded, color: AppColors.danger, size: 36),
             const SizedBox(height: 12),
             Text(message, style: AppTextStyles.body, textAlign: TextAlign.center),
             if (onRetry != null) ...[

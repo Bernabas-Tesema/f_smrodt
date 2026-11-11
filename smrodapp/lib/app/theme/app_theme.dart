@@ -11,11 +11,11 @@ class AppTheme {
   static ThemeData get light {
     final scheme = ColorScheme(
       brightness: Brightness.light,
-      primary: AppColors.red,
+      primary: AppColors.primary,
       onPrimary: Colors.white,
-      secondary: AppColors.green,
-      onSecondary: Colors.white,
-      error: AppColors.red,
+      secondary: AppColors.brass,
+      onSecondary: AppColors.ink,
+      error: AppColors.danger,
       onError: Colors.white,
       surface: AppColors.paper,
       onSurface: AppColors.ink,
@@ -41,19 +41,19 @@ class AppTheme {
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: AppColors.paper,
-        indicatorColor: AppColors.red.withValues(alpha: 0.14),
+        indicatorColor: AppColors.primary.withValues(alpha: 0.12),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           final selected = states.contains(WidgetState.selected);
           return AppFonts.manrope(
             fontSize: 11,
             fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
             letterSpacing: 0.1,
-            color: selected ? AppColors.red : AppColors.muted,
+            color: selected ? AppColors.primary : AppColors.muted,
           );
         }),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           final selected = states.contains(WidgetState.selected);
-          return IconThemeData(color: selected ? AppColors.red : AppColors.muted);
+          return IconThemeData(color: selected ? AppColors.primary : AppColors.muted);
         }),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -70,11 +70,11 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: AppColors.red, width: 1.4),
+          borderSide: const BorderSide(color: AppColors.primary, width: 1.4),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: AppColors.red),
+          borderSide: const BorderSide(color: AppColors.danger),
         ),
         labelStyle: const TextStyle(color: AppColors.muted),
       ),
@@ -91,7 +91,7 @@ class AppTheme {
     borderRadius: BorderRadius.circular(24),
     border: Border.all(color: AppColors.line),
     boxShadow: const [
-      BoxShadow(color: Color(0x0C141816), blurRadius: 24, offset: Offset(0, 10)),
+      BoxShadow(color: Color(0x14102820), blurRadius: 28, offset: Offset(0, 12)),
     ],
   );
 }

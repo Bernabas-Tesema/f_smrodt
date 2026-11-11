@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_fonts.dart';
 import 'brand_backdrop.dart';
+import 'vscu_mark.dart';
 
 /// Sign-in page frame: curves, circular logo, centered title, then the form.
 class BrandedPage extends StatelessWidget {
@@ -27,85 +28,63 @@ class BrandedPage extends StatelessWidget {
       backgroundColor: AppColors.background,
       body: Stack(
         children: [
-          const BrandBackdrop(),
+          const CornerCurves(),
           SafeArea(
-            child: centered ? _centeredBody(context) : _topBody(),
-          ),
+        bottom: false,
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 0),
+              child: Column(
+                children: [
+                  if (onBack != null)
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: IconButton(
+                        onPressed: onBack,
+                        icon: const Icon(Icons.arrow_back, color: AppColors.ink),
+                      ),
+                    )
+                  else
+                    const SizedBox(height: 12),
+                  const Center(child: BrandLogoBadge()),
+                  const SizedBox(height: 20),
+                  Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    style: AppFonts.manrope(
+                      fontSize: 30,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.ink,
+                      letterSpacing: -0.8,
+                      height: 1.05,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    subtitle,
+                    textAlign: TextAlign.center,
+                    style: AppFonts.manrope(
+                      fontSize: 15,
+                      height: 1.4,
+                      color: AppColors.ink,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(24, centered ? 28 : 20, 24, 28),
+              child: Column(children: children),
+            ),
+          ],
+        ),
+      ),
         ],
       ),
     );
-  }
-
-  Widget _topBody() {
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-      children: _content(topGap: onBack == null),
-    );
-  }
-
-  Widget _centeredBody(BuildContext context) {
-    return Stack(
-      children: [
-        LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight - 32),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: _content(topGap: false, includeBack: false),
-                ),
-              ),
-            );
-          },
-        ),
-        if (onBack != null)
-          Align(
-            alignment: Alignment.topLeft,
-            child: IconButton(
-              onPressed: onBack,
-              icon: const Icon(Icons.arrow_back, color: AppColors.ink),
-            ),
-          ),
-      ],
-    );
-  }
-
-  List<Widget> _content({required bool topGap, bool includeBack = true}) {
-    return [
-      if (includeBack && onBack != null)
-        Align(
-          alignment: Alignment.centerLeft,
-          child: IconButton(
-            onPressed: onBack,
-            icon: const Icon(Icons.arrow_back, color: AppColors.ink),
-          ),
-        )
-      else if (topGap)
-        const SizedBox(height: 20),
-      const Center(child: BrandLogoBadge()),
-      const SizedBox(height: 28),
-      Text(
-        title,
-        textAlign: TextAlign.center,
-        style: AppFonts.manrope(
-          fontSize: 34,
-          fontWeight: FontWeight.w800,
-          color: AppColors.ink,
-          letterSpacing: -1.2,
-          height: 1.05,
-        ),
-      ),
-      const SizedBox(height: 10),
-      Text(
-        subtitle,
-        textAlign: TextAlign.center,
-        style: AppFonts.manrope(fontSize: 15, height: 1.45, color: AppColors.muted, fontWeight: FontWeight.w500),
-      ),
-      const SizedBox(height: 36),
-      ...children,
-    ];
   }
 }
 
@@ -117,26 +96,16 @@ class BrandLogoBadge extends StatelessWidget {
     return Container(
       width: 108,
       height: 108,
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: AppColors.paper,
+        color: AppColors.background,
         shape: BoxShape.circle,
-        border: Border.all(color: Colors.white, width: 6),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.22), width: 2),
         boxShadow: const [
-          BoxShadow(color: Color(0x1A141816), blurRadius: 28, offset: Offset(0, 14)),
+          BoxShadow(color: Color(0x22102820), blurRadius: 22, offset: Offset(0, 10)),
         ],
       ),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Image.asset('assets/images/smrod_logo.png'),
-          const Positioned(
-            right: -2,
-            bottom: -2,
-            child: Icon(Icons.circle, size: 12, color: AppColors.green),
-          ),
-        ],
-      ),
+      child: const VscuMark(size: 84),
     );
   }
 }
@@ -206,15 +175,15 @@ InputDecoration brandedInput({required String hint, IconData? icon, Widget? suff
     enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(16),
-      borderSide: const BorderSide(color: AppColors.red, width: 1.4),
+      borderSide: const BorderSide(color: AppColors.primary, width: 1.4),
     ),
     errorBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(16),
-      borderSide: const BorderSide(color: AppColors.red),
+      borderSide: const BorderSide(color: AppColors.danger),
     ),
     focusedErrorBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(16),
-      borderSide: const BorderSide(color: AppColors.red, width: 1.4),
+      borderSide: const BorderSide(color: AppColors.danger, width: 1.4),
     ),
   );
 }

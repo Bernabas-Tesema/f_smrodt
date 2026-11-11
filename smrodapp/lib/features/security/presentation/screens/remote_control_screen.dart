@@ -23,18 +23,18 @@ class RemoteControlScreen extends ConsumerWidget {
     final command = state.latestCommand;
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('Remote control')),
-      body: Stack(
-        children: [
-          const BrandBackdrop(),
-          ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          const Text(
-            'Commands are checked for identity, ownership, and an idempotency key before the device will run them.',
-            style: AppTextStyles.caption,
-          ),
-          const SizedBox(height: 16),
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            const CurveHeader(
+              title: 'Remote control',
+              subtitle: 'Identity and ownership are checked before a command runs.',
+            ),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                children: [
           if (command != null)
             Container(
               decoration: AppTheme.card,
@@ -61,7 +61,7 @@ class RemoteControlScreen extends ConsumerWidget {
               padding: const EdgeInsets.only(bottom: 12),
               child: Text(
                 'Command failed.\nReason: ${state.error}\nAction: Try again later.',
-                style: AppTextStyles.body.copyWith(color: AppColors.red),
+                style: AppTextStyles.body.copyWith(color: AppColors.danger),
               ),
             ),
           _CommandButton(
@@ -90,9 +90,11 @@ class RemoteControlScreen extends ConsumerWidget {
             busy: state.busy,
             onPressed: () => _send(context, ref, VehicleCommandType.status),
           ),
-        ],
-          ),
-        ],
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -170,7 +172,7 @@ class _CommandButton extends StatelessWidget {
             ? FilledButton(
                 onPressed: busy ? null : onPressed,
                 style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.red,
+                  backgroundColor: AppColors.danger,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 ),
                 child: Text(label),

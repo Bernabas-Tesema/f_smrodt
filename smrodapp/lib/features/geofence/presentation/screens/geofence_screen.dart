@@ -57,13 +57,15 @@ class _GeofenceScreenState extends ConsumerState<GeofenceScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('Geofence')),
-      body: Stack(
-        children: [
-          const BrandBackdrop(),
-          ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            const CurveHeader(title: 'Geofence', subtitle: 'Zones around the current position.'),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                children: [
           SizedBox(
             height: 220,
             child: ClipRRect(
@@ -108,9 +110,11 @@ class _GeofenceScreenState extends ConsumerState<GeofenceScreen> {
             onChanged: (value) => setState(() => _radius = value),
           ),
           BrandedButton(label: 'Save zone', onPressed: _add),
-        ],
-      ),
-        ],
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -7,6 +7,7 @@ import '../../../../app/theme/app_text_styles.dart';
 import '../../../../app/theme/app_theme.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../shared/extensions/context_extensions.dart';
+import '../../../../shared/widgets/brand_backdrop.dart';
 
 /// Owner customer support: call, email, WhatsApp, FAQ, and a message form.
 class CustomerSupportScreen extends StatefulWidget {
@@ -51,18 +52,24 @@ class _CustomerSupportScreenState extends State<CustomerSupportScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text('Customer support'),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
-        children: [
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            const CurveHeader(
+              title: 'Customer support',
+              subtitle: 'Call, email, WhatsApp, and questions.',
+            ),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
+                children: [
           Container(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(24),
               gradient: const LinearGradient(
-                colors: [AppColors.greenDark, AppColors.green],
+                colors: [AppColors.primaryDark, AppColors.tide],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -71,7 +78,7 @@ class _CustomerSupportScreenState extends State<CustomerSupportScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'SMROD Support',
+                  'VSCU-100 Support',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -100,8 +107,8 @@ class _CustomerSupportScreenState extends State<CustomerSupportScreen> {
               children: [
                 ListTile(
                   leading: const CircleAvatar(
-                    backgroundColor: Color(0x1A0E8A55),
-                    child: Icon(Icons.phone_outlined, color: AppColors.green),
+                    backgroundColor: Color(0x1A1A6B82),
+                    child: Icon(Icons.phone_outlined, color: AppColors.tide),
                   ),
                   title: const Text('Call support'),
                   subtitle: Text(AppConstants.emergencyContact),
@@ -111,21 +118,21 @@ class _CustomerSupportScreenState extends State<CustomerSupportScreen> {
                 const Divider(height: 1),
                 ListTile(
                   leading: const CircleAvatar(
-                    backgroundColor: Color(0x1AC81D1D),
-                    child: Icon(Icons.mail_outline, color: AppColors.red),
+                    backgroundColor: Color(0x1A163A5F),
+                    child: Icon(Icons.mail_outline, color: AppColors.primary),
                   ),
                   title: const Text('Email'),
                   subtitle: Text(AppConstants.supportEmail),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => _launch(
-                    'mailto:${AppConstants.supportEmail}?subject=SMROD%20Support',
+                    'mailto:${AppConstants.supportEmail}?subject=VSCU-100%20Support',
                   ),
                 ),
                 const Divider(height: 1),
                 ListTile(
                   leading: const CircleAvatar(
-                    backgroundColor: Color(0x1A0E8A55),
-                    child: Icon(Icons.chat_outlined, color: AppColors.green),
+                    backgroundColor: Color(0x1AC4A36A),
+                    child: Icon(Icons.chat_outlined, color: AppColors.brass),
                   ),
                   title: const Text('WhatsApp'),
                   subtitle: const Text('Chat with an agent'),
@@ -170,7 +177,7 @@ class _CustomerSupportScreenState extends State<CustomerSupportScreen> {
                   child: FilledButton(
                     onPressed: _sending ? null : _sendMessage,
                     style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.greenDark,
+                      backgroundColor: AppColors.primary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
@@ -206,7 +213,11 @@ class _CustomerSupportScreenState extends State<CustomerSupportScreen> {
               ),
             ),
           ),
-        ],
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -231,7 +242,7 @@ class _CustomerSupportScreenState extends State<CustomerSupportScreen> {
       scheme: 'mailto',
       path: AppConstants.supportEmail,
       queryParameters: {
-        'subject': 'SMROD Support · $subject',
+        'subject': 'VSCU-100 Support · $subject',
         'body': body,
       },
     );

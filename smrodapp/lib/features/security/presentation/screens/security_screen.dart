@@ -8,6 +8,7 @@ import '../../../../app/theme/app_theme.dart';
 import '../../../../core/security/biometric_service.dart';
 import '../../../../core/utils/date_formatter.dart';
 import '../../../../shared/extensions/context_extensions.dart';
+import '../../../../shared/widgets/brand_backdrop.dart';
 import '../../../authentication/presentation/providers/auth_provider.dart';
 import '../../domain/entities/security_event.dart';
 import '../viewmodels/security_viewmodel.dart';
@@ -28,10 +29,15 @@ class SecurityScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: AppBar(title: const Text('Security')),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            const CurveHeader(title: 'Security', subtitle: 'Arm, immobilize, and review the vehicle.'),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                children: [
           SecurityStatusCard(vehicle: vehicle),
           const SizedBox(height: 12),
           ImmobilizeButton(
@@ -49,7 +55,7 @@ class SecurityScreen extends ConsumerWidget {
           ),
           if (state.error != null) ...[
             const SizedBox(height: 8),
-            Text('Command failed. ${state.error}', style: AppTextStyles.caption.copyWith(color: AppColors.red)),
+            Text('Command failed. ${state.error}', style: AppTextStyles.caption.copyWith(color: AppColors.danger)),
             const Text('Try again when the device is online.', style: AppTextStyles.caption),
           ],
           const SizedBox(height: 12),
@@ -89,7 +95,11 @@ class SecurityScreen extends ConsumerWidget {
           const Text('Events', style: AppTextStyles.title),
           const SizedBox(height: 8),
           for (final event in state.events.take(8)) _EventTile(event: event),
-        ],
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -64,7 +64,7 @@ class _VehiclePairingScreenState extends ConsumerState<VehiclePairingScreen> {
                 child: TextFormField(
                   controller: _serial,
                   textCapitalization: TextCapitalization.characters,
-                  decoration: brandedInput(hint: 'SMROD-001', icon: Icons.memory),
+                  decoration: brandedInput(hint: 'VSCU-001', icon: Icons.memory),
                   validator: (value) => Validators.requiredField(value, 'the device serial'),
                 ),
               ),

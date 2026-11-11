@@ -11,7 +11,8 @@ import '../../../authentication/presentation/viewmodels/auth_viewmodel.dart';
 import '../../../security/presentation/providers/ai_provider.dart';
 import '../../../security/presentation/widgets/security_status_card.dart';
 import '../../../security/data/datasources/ai_remote_datasource.dart';
-import '../../../../shared/widgets/asset_glyph.dart';
+import '../../../../shared/widgets/brand_backdrop.dart';
+import '../../../../shared/widgets/vscu_mark.dart';
 import '../../domain/entities/vehicle.dart';
 import '../viewmodels/vehicle_viewmodel.dart';
 
@@ -35,30 +36,38 @@ class VehicleDashboardScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+        bottom: false,
+        child: Column(
           children: [
-            _WelcomeCard(
-              name: user?.displayName ?? 'Owner',
-              onAlerts: () => context.go('/alerts'),
-              onAccount: () => _account(context),
+            CurveHeader(
+              child: _WelcomeCard(
+                name: user?.displayName ?? 'Owner',
+                onAlerts: () => context.go('/alerts'),
+                onAccount: () => _account(context),
+              ),
             ),
-            const SizedBox(height: 14),
-            _VehicleHeroCard(vehicle: vehicle),
-            const SizedBox(height: 14),
-            SecurityStatusCard(vehicle: vehicle),
-            const SizedBox(height: 14),
-            _AiIntelligenceCard(vehicle: vehicle),
-            const SizedBox(height: 18),
-            Row(
-              children: [
-                const Expanded(child: Text('Quick actions', style: AppTextStyles.title)),
-                TextButton(onPressed: () => context.go('/security'), child: const Text('View all')),
-              ],
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                children: [
+                  _VehicleHeroCard(vehicle: vehicle),
+                  const SizedBox(height: 14),
+                  SecurityStatusCard(vehicle: vehicle),
+                  const SizedBox(height: 14),
+                  _AiIntelligenceCard(vehicle: vehicle),
+                  const SizedBox(height: 18),
+                  Row(
+                    children: [
+                      const Expanded(child: Text('Quick actions', style: AppTextStyles.title)),
+                      TextButton(onPressed: () => context.go('/security'), child: const Text('View all')),
+                    ],
+                  ),
+                  const _QuickActions(),
+                  const SizedBox(height: 16),
+                  const _SosCard(),
+                ],
+              ),
             ),
-            const _QuickActions(),
-            const SizedBox(height: 16),
-            const _SosCard(),
           ],
         ),
       ),
@@ -150,30 +159,23 @@ class _WelcomeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(14, 12, 8, 12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(28),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.red, AppColors.green],
-        ),
-        boxShadow: const [
-          BoxShadow(color: Color(0x2E141816), blurRadius: 28, offset: Offset(0, 16)),
-        ],
-      ),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
       child: Row(
         children: [
           InkWell(
             onTap: onAccount,
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(28),
             child: Container(
               width: 52,
               height: 52,
-              padding: const EdgeInsets.all(6),
-              decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-              child: Image.asset('assets/images/smrod_logo.png'),
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: AppColors.background,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white.withValues(alpha: 0.7)),
+              ),
+              child: const VscuMark(size: 44),
             ),
           ),
           const SizedBox(width: 12),
@@ -188,7 +190,7 @@ class _WelcomeCard extends StatelessWidget {
           ),
           IconButton(
             onPressed: onAlerts,
-            icon: const AssetGlyph('assets/images/notifcation.jpg', size: 32),
+            icon: const Icon(Icons.notifications_outlined, color: Colors.white, size: 26),
           ),
         ],
       ),
@@ -204,7 +206,7 @@ class _VehicleHeroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = vehicle.online ? AppColors.green : AppColors.red;
+    final statusColor = vehicle.online ? AppColors.tide : AppColors.danger;
     return Container(
         padding: const EdgeInsets.all(18),
         decoration: AppTheme.card,
@@ -267,7 +269,7 @@ class _SosCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.red,
+      color: AppColors.primaryDark,
       borderRadius: BorderRadius.circular(28),
       child: InkWell(
         borderRadius: BorderRadius.circular(26),
@@ -299,7 +301,7 @@ class _SosCard extends StatelessWidget {
                 width: 74,
                 height: 74,
                 decoration: BoxDecoration(
-                  color: AppColors.red,
+                  color: AppColors.danger,
                   shape: BoxShape.circle,
                   border: Border.all(color: Colors.white, width: 3),
                 ),
@@ -322,10 +324,10 @@ class _QuickActions extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _CircleAction(icon: Icons.lock_outline, label: 'Immobilize', color: AppColors.green, onTap: () => context.push('/control')),
-        _CircleAction(icon: Icons.place_outlined, label: 'Live map', color: AppColors.red, onTap: () => context.go('/track')),
-        _CircleAction(icon: Icons.shield_outlined, label: 'Security', color: AppColors.red, onTap: () => context.go('/security')),
-        _CircleAction(icon: Icons.radar, label: 'Geofence', color: AppColors.greenDark, onTap: () => context.push('/geofence')),
+        _CircleAction(icon: Icons.lock_outline, label: 'Immobilize', color: AppColors.tide, onTap: () => context.push('/control')),
+        _CircleAction(icon: Icons.place_outlined, label: 'Live map', color: AppColors.primary, onTap: () => context.go('/track')),
+        _CircleAction(icon: Icons.shield_outlined, label: 'Security', color: AppColors.primaryDark, onTap: () => context.go('/security')),
+        _CircleAction(icon: Icons.radar, label: 'Geofence', color: AppColors.brass, onTap: () => context.push('/geofence')),
       ],
     );
   }
@@ -408,21 +410,17 @@ class _AiIntelligenceCard extends ConsumerWidget {
     final loading = asyncAi.isLoading;
     final connected = snapshot.connected;
     final riskColor = snapshot.riskScore >= 70
-        ? const Color(0xFFFF8A80)
+        ? const Color(0xFFFFB4B4)
         : snapshot.riskScore >= 40
-            ? const Color(0xFFFFD54F)
-            : AppColors.green;
+            ? const Color(0xFFE7C98A)
+            : const Color(0xFFD5E8F0);
 
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
-        color: AppColors.greenDark,
+        color: AppColors.primaryDark,
         boxShadow: const [
-          BoxShadow(
-            color: Color(0x24141816),
-            blurRadius: 24,
-            offset: Offset(0, 12),
-          ),
+          BoxShadow(color: Color(0x24141816), blurRadius: 24, offset: Offset(0, 12)),
         ],
       ),
       padding: const EdgeInsets.all(16),
@@ -476,8 +474,8 @@ class _AiIntelligenceCard extends ConsumerWidget {
                         color: loading
                             ? Colors.white54
                             : connected
-                                ? AppColors.green
-                                : const Color(0xFFFF8A80),
+                                ? AppColors.brass
+                                : const Color(0xFFFFB4B4),
                       ),
                       const SizedBox(width: 5),
                       Text(
@@ -521,13 +519,13 @@ class _AiIntelligenceCard extends ConsumerWidget {
             connected
                 ? '${snapshot.provider} · ${snapshot.model}'
                 : 'Start Django (`python manage.py runserver`) to load live AI.',
-            style: const TextStyle(color: Colors.white60, fontSize: 11),
+            style: const TextStyle(color: Colors.white70, fontSize: 11),
           ),
           if (snapshot.insights.isNotEmpty) ...[
             const SizedBox(height: 8),
             Text(
               snapshot.insights.first,
-              style: const TextStyle(color: Colors.white70, fontSize: 11),
+              style: const TextStyle(color: Colors.white70, fontSize: 12, height: 1.35),
             ),
           ],
         ],

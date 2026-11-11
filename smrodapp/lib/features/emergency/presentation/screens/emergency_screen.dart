@@ -25,24 +25,33 @@ class EmergencyScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: Stack(
-        children: [
-          const BrandBackdrop(),
-          SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-          child: Column(
-            children: [
-              Row(
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            CurveHeader(
+              child: Row(
                 children: [
-                  IconButton(onPressed: () => context.pop(), icon: const Icon(Icons.arrow_back)),
+                  IconButton(
+                    onPressed: () => context.pop(),
+                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  ),
                   const Expanded(
-                    child: Text('SOS', textAlign: TextAlign.center, style: AppTextStyles.title),
+                    child: Text(
+                      'SOS',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w800),
+                    ),
                   ),
                   const SizedBox(width: 48),
                 ],
               ),
-              const SizedBox(height: 12),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                child: Column(
+                  children: [
               SosButton(
                 busy: state.busy,
                 onPressed: sent ? null : () => _send(context, ref),
@@ -50,7 +59,7 @@ class EmergencyScreen extends ConsumerWidget {
               const SizedBox(height: 16),
               Text(
                 sent ? 'SOS Activated' : 'Send SOS',
-                style: const TextStyle(color: AppColors.red, fontSize: 22, fontWeight: FontWeight.w800),
+                style: const TextStyle(color: AppColors.danger, fontSize: 22, fontWeight: FontWeight.w800),
               ),
               const SizedBox(height: 4),
               Text(
@@ -105,8 +114,8 @@ class EmergencyScreen extends ConsumerWidget {
                 decoration: AppTheme.card,
                 child: ListTile(
                   leading: const CircleAvatar(
-                    backgroundColor: Color(0xFFFFE8E5),
-                    child: Icon(Icons.person, color: AppColors.red),
+                    backgroundColor: Color(0xFFE7F0F5),
+                    child: Icon(Icons.person, color: AppColors.primary),
                   ),
                   title: const Text('Emergency contact'),
                   subtitle: const Text(AppConstants.emergencyContact),
@@ -133,17 +142,18 @@ class EmergencyScreen extends ConsumerWidget {
                           }
                         },
                   style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.red,
+                    backgroundColor: AppColors.danger,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
                   ),
                   child: Text(sent ? 'Cancel SOS' : 'Send SOS'),
                 ),
               ),
-            ],
-          ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
-          ),
-        ],
       ),
     );
   }

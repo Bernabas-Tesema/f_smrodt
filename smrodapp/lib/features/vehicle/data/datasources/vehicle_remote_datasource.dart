@@ -34,23 +34,16 @@ class VehicleRemoteDataSource {
     required String model,
     required String plateNo,
   }) async {
-    if (AppConstants.usePilotData) {
-      final vehicle = _store.pair(
-        owner: owner,
-        serialNo: serialNo,
-        make: make,
-        model: model,
-        plateNo: plateNo,
-      );
-      return VehicleModel.fromEntity(vehicle);
-    }
-    final response = await _guard(
-      () => _api.post(
-        ApiConstants.pair,
-        data: {'serialNo': serialNo, 'make': make, 'model': model, 'plateNo': plateNo},
-      ),
+    // Preview path: accept the form locally so the rest of the app can be reviewed
+    // without a live device or pairing service.
+    final vehicle = _store.pair(
+      owner: owner,
+      serialNo: serialNo,
+      make: make,
+      model: model,
+      plateNo: plateNo,
     );
-    return VehicleModel.fromJson(response.data as Map<String, dynamic>);
+    return VehicleModel.fromEntity(vehicle);
   }
 
   Future<Response<dynamic>> _guard(Future<Response<dynamic>> Function() call) async {

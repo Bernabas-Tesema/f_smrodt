@@ -17,7 +17,7 @@ class ImmobilizeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = immobilized ? AppColors.green : AppColors.red;
+    final color = immobilized ? AppColors.tide : AppColors.danger;
     return SizedBox(
       width: double.infinity,
       height: 64,

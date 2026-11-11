@@ -70,7 +70,7 @@ class SecurityStatusCard extends StatelessWidget {
     return switch (posture) {
       SecurityPosture.protected => AppColors.green,
       SecurityPosture.attention || SecurityPosture.warning => AppColors.amber,
-      SecurityPosture.critical => AppColors.red,
+      SecurityPosture.critical => AppColors.danger,
       SecurityPosture.offline => AppColors.muted,
     };
   }

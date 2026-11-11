@@ -25,7 +25,7 @@ class VehicleStatusCard extends StatelessWidget {
               const Expanded(child: Text('Vehicle', style: AppTextStyles.title)),
               _Pill(
                 label: vehicle.online ? 'Online' : 'Offline',
-                color: vehicle.online ? AppColors.green : AppColors.red,
+                color: vehicle.online ? AppColors.tide : AppColors.danger,
               ),
             ],
           ),
@@ -40,7 +40,7 @@ class VehicleStatusCard extends StatelessWidget {
               ),
               _Pill(
                 label: vehicle.immobilized ? 'Immobilized' : 'Circuit closed',
-                color: vehicle.immobilized ? AppColors.red : AppColors.green,
+                color: vehicle.immobilized ? AppColors.danger : AppColors.tide,
               ),
               _Pill(
                 label: '${vehicle.speedKph.toStringAsFixed(0)} km/h',
