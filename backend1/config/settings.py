@@ -185,14 +185,22 @@ DEFAULT_FROM_EMAIL = os.getenv(
     EMAIL_HOST_USER or 'webmaster@localhost',
 )
 
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            'hosts': [(REDIS_HOST, REDIS_PORT)],
+# Use in-memory channels on Render when Redis is not provisioned.
+if os.getenv('REDIS_URL') or os.getenv('USE_REDIS_CHANNELS', 'False') == 'True':
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                'hosts': [os.getenv('REDIS_URL', f'redis://{REDIS_HOST}:{REDIS_PORT}/0')],
+            },
         },
-    },
-}
+    }
+else:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        },
+    }
 
 # CORS Configuration for Admin Web Frontend + Flutter Web (random localhost ports)
 CORS_ALLOWED_ORIGINS = [

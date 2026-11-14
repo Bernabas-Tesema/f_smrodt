@@ -10,4 +10,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["celery", "-A", "config", "worker", "--loglevel=info"]
+# Web service for Render (API). Celery needs a separate worker + Redis.
+CMD ["sh", "-c", "python manage.py migrate --no-input && python manage.py collectstatic --no-input && gunicorn config.wsgi:application --bind 0.0.0.0:${PORT:-8000}"]
